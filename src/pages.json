@@ -1,0 +1,174 @@
+{
+	"pages": [
+		{
+			"path": "pages/index/index",
+			"style": {
+				"navigationBarTitleText": ""
+			}
+		},
+		{
+			"path": "pages/standard/standard",
+			"style": {
+				"navigationBarTitleText": ""
+			}
+		},
+		{
+			"path": "pages/record/record",
+			"style": {
+				"navigationBarTitleText": ""
+			}
+		},
+		{
+			"path": "pages/profile/profile",
+			"style": {
+				"navigationBarTitleText": ""
+			}
+		},
+		{
+			"path": "pages/health/health",
+			"style": {
+				"navigationBarTitleText": "健康数据"
+			}
+		},
+		{
+			"path": "pages/login/login",
+			"style": {
+				"navigationBarTitleText": "登录",
+				"navigationBarTextStyle": "white",
+				"navigationBarBackgroundColor": "#1E88E5"
+			}
+		},
+		{
+			"path": "pages/doctor-login/doctor-login",
+			"style": {
+				"navigationBarTitleText": "医生端登录",
+				"navigationBarTextStyle": "black",
+				"navigationBarBackgroundColor": "#fff"
+			}
+		},
+		{
+			"path": "pages/doctor-detail/doctor-detail",
+			"style": {
+				"navigationBarTitleText": "医生详情",
+				"navigationBarTextStyle": "black",
+				"navigationBarBackgroundColor": "#fff"
+			}
+		},
+		{
+			"path": "pages/register/register",
+			"style": {
+				"navigationBarTitleText": "注册账号",
+				"navigationBarTextStyle": "black",
+				"navigationBarBackgroundColor": "#fff"
+			}
+		},
+		{
+			"path": "pages/settings/settings",
+			"style": {
+				"navigationBarTitleText": "设置中心",
+				"navigationBarTextStyle": "white",
+				"navigationBarBackgroundColor": "#1890ff"
+			}
+		},
+		{
+			"path": "pages/change-password/change-password",
+			"style": {
+				"navigationBarTitleText": "修改密码",
+				"navigationBarTextStyle": "white",
+				"navigationBarBackgroundColor": "#1890ff"
+			}
+		},
+		{
+			"path": "pages/doctor-home/doctor-home",
+			"style": {
+				"navigationBarTitleText": "医生工作台",
+				"navigationBarTextStyle": "white",
+				"navigationBarBackgroundColor": "#1890ff"
+			}
+		},
+		{
+			"path": "pages/doctor-scan/doctor-scan",
+			"style": {
+				"navigationBarTitleText": "扫码录入",
+				"navigationBarTextStyle": "black",
+				"navigationBarBackgroundColor": "#fff"
+			}
+		},
+		{
+			"path": "pages/patient-list/patient-list",
+			"style": {
+				"navigationBarTitleText": "患者列表",
+				"navigationBarTextStyle": "black",
+				"navigationBarBackgroundColor": "#fff"
+			}
+		},
+		{
+			"path": "pages/patient-edit/patient-edit",
+			"style": {
+				"navigationBarTitleText": "患者信息",
+				"navigationBarTextStyle": "black",
+				"navigationBarBackgroundColor": "#fff"
+			}
+		},
+		{
+			"path": "pages/patient-detail/patient-detail",
+			"style": {
+				"navigationBarTitleText": "患者详情",
+				"navigationBarTextStyle": "black",
+				"navigationBarBackgroundColor": "#fff"
+			}
+		},
+		{
+			"path": "pages/doctor-profile/doctor-profile",
+			"style": {
+				"navigationBarTitleText": "个人信息",
+				"navigationBarTextStyle": "black",
+				"navigationBarBackgroundColor": "#fff"
+			}
+		}
+	],
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "CP健康码平台",
+		"navigationBarBackgroundColor": "#1E88E5",
+		"backgroundColor": "#F8F8F8"
+	},
+	"tabBar": {
+		"color": "#666",
+		"selectedColor": "#1E88E5",
+		"backgroundColor": "#fff",
+		"borderStyle": "black",
+		"list": [
+			{
+				"pagePath": "pages/index/index",
+				"text": "首页",
+				"iconPath": "static/tab/shouyeweixuan.png",
+				"selectedIconPath": "static/tab/shouyeyixuan.png"
+			},
+			{
+				"pagePath": "pages/standard/standard",
+				"text": "评分标准",
+				"iconPath": "static/tab/diandanweixuan.png",
+				"selectedIconPath": "static/tab/diandanyixuan.png"
+			},
+			{
+				"pagePath": "pages/record/record",
+				"text": "评分档案",
+				"iconPath": "static/tab/danganweixuan.png",
+				"selectedIconPath": "static/tab/danganyixuan.png"
+			},
+			{
+				"pagePath": "pages/profile/profile",
+				"text": "个人中心",
+				"iconPath": "static/tab/wodeweixuan.png",
+				"selectedIconPath": "static/tab/wodeyixuan.png"
+			}
+		]
+	},
+	"easycom": {
+		"autoscan": true,
+		"custom": {
+			"^u--(.*)": "uview-plus/components/u-$1/u-$1.vue"
+		}
+	}
+}
