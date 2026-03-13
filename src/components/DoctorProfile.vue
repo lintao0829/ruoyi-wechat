@@ -110,7 +110,7 @@ const checkLogin = () => {
   const token = uni.getStorageSync('token');
   if (!token) {
     uni.reLaunch({
-      url: '/pages/login/login'
+      url: '/packageA/login/login'
     });
   }
 };
@@ -226,7 +226,7 @@ const goToSettings = () => {
 // 跳转到修改密码
 const goToChangePassword = () => {
   uni.navigateTo({
-    url: '/pages/change-password/change-password'
+    url: '/packageA/change-password/change-password'
   });
 };
 

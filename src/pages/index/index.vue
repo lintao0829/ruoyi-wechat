@@ -179,7 +179,7 @@ const getUserInfo = () => {
 
 const goToLogin = () => {
   uni.navigateTo({
-    url: '/pages/login/login'
+    url: '/packageA/login/login'
   });
 };
 

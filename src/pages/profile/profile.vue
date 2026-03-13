@@ -201,7 +201,7 @@ const handleTokenExpired = () => {
 
 const goToLogin = () => {
   uni.navigateTo({
-    url: '/pages/login/login'
+    url: '/packageA/login/login'
   });
 };
 
@@ -214,7 +214,7 @@ const goToUserInfo = () => {
 
 const goToRecord = () => {
   uni.switchTab({
-    url: '/pages/record/record'
+    url: '/packageA/record/record'
   });
 };
 
@@ -255,7 +255,7 @@ const goToInfo = () => {
     return;
   }
   uni.navigateTo({
-    url: '/pages/change-password/change-password'
+    url: '/packageA/change-password/change-password'
   });
 };
 
@@ -274,7 +274,7 @@ const goToSettings = () => {
 
 const switchToDoctor = () => {
   uni.navigateTo({
-    url: '/pages/doctor-login/doctor-login'
+    url: '/PackageA/doctor-login/doctor-login'
   });
 };
 

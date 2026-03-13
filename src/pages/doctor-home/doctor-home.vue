@@ -153,7 +153,7 @@ const checkLogin = () => {
   const userType = uni.getStorageSync('userType');
   if (!token || userType !== 'doctor') {
     uni.reLaunch({
-      url: '/pages/doctor-login/doctor-login'
+      url: '/PackageA/doctor-login/doctor-login'
     });
   }
 };

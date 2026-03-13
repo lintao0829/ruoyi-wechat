@@ -88,7 +88,7 @@ onShow(() => {
 
 const goToHealth = () => {
   uni.navigateTo({
-    url: '/pages/health/health'
+    url: '/packageA/health/health'
   });
 };
 </script>

@@ -25,28 +25,6 @@
 			}
 		},
 		{
-			"path": "pages/health/health",
-			"style": {
-				"navigationBarTitleText": "健康数据"
-			}
-		},
-		{
-			"path": "pages/login/login",
-			"style": {
-				"navigationBarTitleText": "登录",
-				"navigationBarTextStyle": "white",
-				"navigationBarBackgroundColor": "#1E88E5"
-			}
-		},
-		{
-			"path": "pages/doctor-login/doctor-login",
-			"style": {
-				"navigationBarTitleText": "医生端登录",
-				"navigationBarTextStyle": "black",
-				"navigationBarBackgroundColor": "#fff"
-			}
-		},
-		{
 			"path": "pages/doctor-detail/doctor-detail",
 			"style": {
 				"navigationBarTitleText": "医生详情",
@@ -66,14 +44,6 @@
 			"path": "pages/settings/settings",
 			"style": {
 				"navigationBarTitleText": "设置中心",
-				"navigationBarTextStyle": "white",
-				"navigationBarBackgroundColor": "#1890ff"
-			}
-		},
-		{
-			"path": "pages/change-password/change-password",
-			"style": {
-				"navigationBarTitleText": "修改密码",
 				"navigationBarTextStyle": "white",
 				"navigationBarBackgroundColor": "#1890ff"
 			}
@@ -125,6 +95,34 @@
 				"navigationBarTextStyle": "black",
 				"navigationBarBackgroundColor": "#fff"
 			}
+		}
+	],
+	"subPackages": [
+		{
+			"root": "packageA",
+			"pages": [
+				{
+					"path": "change-password/change-password"
+				},
+				{
+					"path": "login/login"
+				},
+				{
+					"path": "health/health",
+					"style": {
+						"navigationBarTitleText": "健康数据"
+					}
+				},
+				{
+					"path": "record/record",
+					"style": {
+						"navigationBarTitleText": "评分档案"
+					}
+				},
+				{
+					"path": "doctor-login/doctor-login"
+				}
+			]
 		}
 	],
 	"globalStyle": {
