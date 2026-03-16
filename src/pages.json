@@ -114,12 +114,6 @@
 					}
 				},
 				{
-					"path": "record/record",
-					"style": {
-						"navigationBarTitleText": "评分档案"
-					}
-				},
-				{
 					"path": "doctor-login/doctor-login"
 				}
 			]

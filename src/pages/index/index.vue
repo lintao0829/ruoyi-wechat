@@ -14,9 +14,9 @@
       </view>
       <view class="qrcode-container">
         <view class="qrcode">
-          <image src="/static/logo.png" mode="aspectFit" style="width: 200px; height: 200px;"></image>
+          <image :src="isLogin ? riskLevelImage : '/static/logo.png'" mode="aspectFit" :style="isLogin ? 'width: 300px; height: 120px;' : 'width: 200px; height: 200px;'"></image>
         </view>
-        <text class="qrcode-text">未登录或者未绑定医生，无法展示您的健康码</text>
+        <text class="qrcode-text">{{ isLogin ? riskLevelText : '未登录或者未绑定医生，无法展示您的健康码' }}</text>
       </view>
 
       <!-- 医生留言模块 -->
@@ -29,7 +29,7 @@
         </view>
 
         <!-- 有患者信息时显示 -->
-        <view class="patient-info-card" v-if="patientData.patientId">
+        <view class="patient-info-card" v-if="patientData.patientId && isLogin">
           <!-- 基础信息卡片 -->
           <view class="info-card">
             <view class="info-row">
@@ -116,7 +116,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref } from 'vue';
 import { onShow } from '@dcloudio/uni-app';
 import DoctorHome from '@/components/DoctorHome.vue';
 
@@ -130,11 +130,15 @@ const userInfo = ref({});
 const patientData = ref({});
 // 病历图片列表
 const medicalRecordImgList = ref([]);
+// 风险等级图片
+const riskLevelImage = ref('/static/img/1.jpeg');
+// 风险等级文字
+const riskLevelText = ref('请先登录查看健康码');
 
 // 页面加载
-onMounted(() => {
-  getUserInfo();
-});
+// onMounted(() => {
+//   getUserInfo();
+// });
 
 // 页面显示
 onShow(() => {
@@ -185,6 +189,10 @@ const goToLogin = () => {
 
 // 获取患者信息
 const getPatientInfo = (patientId) => {
+  if (!patientId) {
+    return;
+  }
+  
   uni.request({
     url: 'https://yiliao.admin.php7788.com/prod-api/system/patient/' + patientId,
     method: 'GET',
@@ -204,7 +212,7 @@ const getPatientInfo = (patientId) => {
             const imgUrls = patientData.value.imgUrl.split(',').filter(url => url.trim());
             medicalRecordImgList.value = imgUrls.map(url => {
               let imgUrl = url.trim();
-              // 如果已经是完整URL，直接返回
+              // 如果已经是完整 URL，直接返回
               if (imgUrl.startsWith('http')) {
                 return { url: imgUrl };
               }
@@ -213,11 +221,62 @@ const getPatientInfo = (patientId) => {
               return { url: 'https://yiliao.admin.php7788.com/prod-api/' + imgUrl };
             });
           }
+          
+          // 获取最新评分记录
+          getScoreRecord(patientId);
         }
       }
     },
     fail: (err) => {
       console.error('获取患者信息失败:', err);
+    }
+  });
+};
+
+// 获取评分记录
+const getScoreRecord = (patientId) => {
+  uni.request({
+    url: 'https://yiliao.admin.php7788.com/prod-api/system/score/record/list?patientId=' + patientId,
+    method: 'GET',
+    timeout: 10000,
+    header: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + uni.getStorageSync('token')
+    },
+    success: (res) => {
+      if (res.statusCode === 200) {
+        const data = res.data;
+        if (data.code === 200 || data.code === 0) {
+          const records = data.rows || [];
+          if (records.length > 0) {
+            const latestRecord = records[0];
+            const totalScore = latestRecord.totalScore || 0;
+            
+            // 根据总分设置风险等级图片和文字
+            if (totalScore <= 1) {
+              riskLevelImage.value = '/static/img/1.jpeg'; // 低危：0-1 分
+              riskLevelText.value = '低危：0-1 分';
+            } else if (totalScore <= 4) {
+              riskLevelImage.value = '/static/img/3.jpeg'; // 中危：2-4 分
+              riskLevelText.value = '中危：2-4 分';
+            } else if (totalScore <= 7) {
+              riskLevelImage.value = '/static/img/4.jpeg'; // 高危：5-7 分
+              riskLevelText.value = '高危：5-7 分';
+            } else {
+              riskLevelImage.value = '/static/img/2.jpeg'; // 很高危：8-10 分（红色）
+              riskLevelText.value = '很高危：8-10 分';
+            }
+          } else {
+            riskLevelImage.value = '/static/img/1.jpeg';
+            riskLevelText.value = '暂无评分记录';
+          }
+        }
+      }
+    },
+    fail: (err) => {
+      console.error('获取评分记录失败:', err);
+      riskLevelImage.value = '/static/img/1.jpeg';
+      riskLevelText.value = '暂无评分记录';
     }
   });
 };

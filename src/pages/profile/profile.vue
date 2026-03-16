@@ -274,7 +274,7 @@ const goToSettings = () => {
 
 const switchToDoctor = () => {
   uni.navigateTo({
-    url: '/PackageA/doctor-login/doctor-login'
+    url: '/packageA/doctor-login/doctor-login'
   });
 };
 
@@ -318,6 +318,9 @@ const clearLoginState = () => {
   // 重置状态
   isLogin.value = false;
   userInfo.value = {};
+
+  // 发送事件通知其他页面清空数据
+  uni.$emit('logoutEvent');
 
   uni.showToast({
     title: '已退出登录',

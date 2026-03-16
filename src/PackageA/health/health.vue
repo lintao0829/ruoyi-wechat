@@ -4,57 +4,57 @@
       <!-- 糖化 -->
       <view class="form-item">
         <view class="item-left">
-          <image src="/static/icon/tanghua.png" class="item-icon"></image>
+          <image src="../../static/icon/tanghua.png" class="item-icon"></image>
           <text class="item-title">糖化</text>
         </view>
         <view class="item-right">
-          <input type="digit" v-model="form.tanghua" placeholder="糖化血红蛋白值(%)" class="item-input" />
+          <input type="digit" v-model="form.sugarValue" placeholder="糖化血红蛋白值 (%)" class="item-input" />
         </view>
       </view>
 
       <!-- 血压 -->
       <view class="form-item">
         <view class="item-left">
-          <image src="/static/icon/xieya.png" class="item-icon"></image>
+          <image src="../../static/icon/xieya.png" class="item-icon"></image>
           <text class="item-title">血压</text>
         </view>
         <view class="item-right multi-input">
-          <input type="digit" v-model="form.shousuoya" placeholder="收缩压(mmHg)" class="item-input small" />
-          <input type="digit" v-model="form.shuzhangya" placeholder="舒张压(mmHg)" class="item-input small" />
+          <input type="digit" v-model="form.systolicPressure" placeholder="收缩压 (mmHg)" class="item-input small" />
+          <input type="digit" v-model="form.diastolicPressure" placeholder="舒张压 (mmHg)" class="item-input small" />
         </view>
       </view>
 
       <!-- 血脂 -->
       <view class="form-item">
         <view class="item-left">
-          <image src="/static/icon/xiezhi1.png" class="item-icon"></image>
-          <text class="item-title">血脂(LDL)</text>
+          <image src="../../static/icon/xiezhi1.png" class="item-icon"></image>
+          <text class="item-title">血脂 (LDL)</text>
         </view>
         <view class="item-right">
-          <input type="digit" v-model="form.xuezhi" placeholder="低密度脂蛋白胆固醇(mmol/L)" class="item-input" />
+          <input type="digit" v-model="form.ldlValue" placeholder="低密度脂蛋白胆固醇 (mmol/L)" class="item-input" />
         </view>
       </view>
 
       <!-- 体重 -->
       <view class="form-item">
         <view class="item-left">
-          <image src="/static/icon/tizhong.png" class="item-icon"></image>
-          <text class="item-title">体重(BMI)</text>
+          <image src="../../static/icon/tizhong.png" class="item-icon"></image>
+          <text class="item-title">体重 (BMI)</text>
         </view>
         <view class="item-right multi-input">
-          <input type="digit" v-model="form.shengao" placeholder="身高(厘米)" class="item-input small" />
-          <input type="digit" v-model="form.tizhong" placeholder="体重(公斤)" class="item-input small" />
+          <input type="digit" v-model="form.height" placeholder="身高 (厘米)" class="item-input small" />
+          <input type="digit" v-model="form.weight" placeholder="体重 (公斤)" class="item-input small" />
         </view>
       </view>
 
       <!-- 控烟 -->
       <view class="form-item">
         <view class="item-left">
-          <image src="/static/icon/kongyan.png" class="item-icon"></image>
+          <image src="../../static/icon/kongyan.png" class="item-icon"></image>
           <text class="item-title">控烟</text>
         </view>
         <view class="item-right">
-          <input type="number" v-model="form.kongyan" placeholder="不吸烟请填0(支)" class="item-input" />
+          <input type="number" v-model="form.smokingCount" placeholder="不吸烟请填 0(支)" class="item-input" />
         </view>
       </view>
     </view>
@@ -70,22 +70,63 @@
 import { ref } from 'vue';
 
 const form = ref({
-  tanghua: '',
-  shousuoya: '',
-  shuzhangya: '',
-  xuezhi: '',
-  shengao: '',
-  tizhong: '',
-  kongyan: ''
+  sugarValue: '',
+  systolicPressure: '',
+  diastolicPressure: '',
+  ldlValue: '',
+  height: '',
+  weight: '',
+  smokingCount: ''
 });
 
 const saveData = () => {
-  // 保存数据逻辑
-  uni.showToast({
-    title: '保存成功',
-    icon: 'success'
+  // 表单验证
+  if (!form.value.sugarValue || !form.value.systolicPressure || !form.value.diastolicPressure || !form.value.ldlValue || !form.value.height || !form.value.weight || form.value.smokingCount === '') {
+    uni.showToast({
+      title: '请填写完整数据',
+      icon: 'none'
+    });
+    return;
+  }
+  form.value.doctorId = uni.getStorageSync('userInfo').doctorId;
+  form.value.patientId = uni.getStorageSync('userInfo').patientId;
+  console.log(form.value,'评分form.value=====')
+  // return false;
+  // 调用保存接口
+  uni.request({
+    url: 'https://yiliao.admin.php7788.com/prod-api/system/score/record/submit',
+    method: 'POST',
+    header: {
+      'Authorization': 'Bearer ' + uni.getStorageSync('token'),
+      'Content-Type': 'application/json'
+    },
+    data: form.value,
+    success: (res) => {
+      if (res.statusCode === 200 && (res.data.code === 200 || res.data.code === 0)) {
+        uni.showToast({
+          title: '保存成功',
+          icon: 'success'
+        });
+        // 保存成功后跳转到历史记录页面
+        setTimeout(() => {
+          uni.switchTab({
+            url: '/pages/record/record'
+          });
+        }, 1500);
+      } else {
+        uni.showToast({
+          title: res.data.msg || '保存失败',
+          icon: 'none'
+        });
+      }
+    },
+    fail: () => {
+      uni.showToast({
+        title: '网络错误',
+        icon: 'none'
+      });
+    }
   });
-  // 可以在这里添加跳转到其他页面的逻辑
 };
 </script>
 
