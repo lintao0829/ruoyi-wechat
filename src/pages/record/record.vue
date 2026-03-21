@@ -92,6 +92,19 @@ const riskLevelClass = computed(() => {
 const fetchHistoryRecords = (patientId) => {
   console.log('patientId===获取评分记录', patientId)
   if (!patientId) {
+    // 清空历史记录缓存
+    historyRecords.value = [{
+      id: 0,
+      totalScore: 0,
+      riskLevel: '',
+      createTime: '',
+      sugarScore: 0,
+      pressureScore: 0,
+      ldlScore: 0,
+      bmiScore: 0,
+      smokingScore: 0,
+      totalScore: 0,
+    }];
     uni.showToast({
       title: '请先登录，才能开始评分',
       icon: 'none'
