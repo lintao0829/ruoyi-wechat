@@ -74,7 +74,7 @@
     <view class="recent-section">
       <view class="section-header">
         <text class="section-title">最近添加</text>
-        <text class="more-link" @click="goToPatientList">查看更多 →</text>
+        <!-- <text class="more-link" @click="goToPatientList">查看更多 →</text> -->
       </view>
       <view class="patient-list">
         <view
@@ -98,8 +98,8 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
-
+import { ref, computed } from 'vue';
+import {onShow} from '@dcloudio/uni-app'
 const props = defineProps({
   userInfo: {
     type: Object,
@@ -130,19 +130,19 @@ const todayStats = ref({
 const recentPatients = ref([]);
 
 // 页面加载
-onMounted(() => {
-  getTodayStats();
+onShow(() => {
+  // getTodayStats();
   getRecentPatients();
 });
 
 // 获取今日统计
-const getTodayStats = () => {
-  todayStats.value = {
-    newPatients: 3,
-    scans: 12,
-    totalPatients: 156
-  };
-};
+// const getTodayStats = () => {
+//   todayStats.value = {
+//     newPatients: 3,
+//     scans: 12,
+//     totalPatients: 156
+//   };
+// };
 
 // 获取最近患者
 const getRecentPatients = () => {
