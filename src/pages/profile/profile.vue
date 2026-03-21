@@ -151,27 +151,6 @@ const getUserInfo = () => {
           userInfo.value = data.data;
           // 根据userType判断：0是医生，1是用户
           userType.value = data.data.userType === 0 ? 0 : 1;
-
-          // 提取关键信息存储到本地缓存
-          const userCache = {
-            userId: data.data.userId,
-            userName: data.data.userName,
-            nickName: data.data.nickName,
-            userType: data.data.userType,
-            admin: data.data.admin,
-            avatar: data.data.avatar,
-            roles: data.data.roles?.map(role => ({
-              roleId: role.roleId,
-              roleName: role.roleName,
-              roleKey: role.roleKey,
-              permissions: role.permissions
-            })) || [],
-            deptId: data.data.dept?.deptId,
-            deptName: data.data.dept?.deptName
-          };
-
-          uni.setStorageSync('userInfo', userCache);
-          console.log('用户信息已保存到本地缓存:', userCache);
         } else {
           console.error('获取用户信息失败:', data.msg);
           // 如果token失效，清除登录状态
@@ -214,7 +193,7 @@ const goToUserInfo = () => {
 
 const goToRecord = () => {
   uni.switchTab({
-    url: '/packageA/record/record'
+    url: '/pages/record/record'
   });
 };
 

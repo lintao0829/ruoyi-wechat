@@ -21,23 +21,15 @@
     </view>
 
     <!-- 医生统计 -->
-    <view class="stats-section">
+    <!-- <view class="stats-section">
       <text class="section-title">我的统计</text>
       <view class="stats-grid">
         <view class="stat-item">
           <text class="stat-num">{{ stats.patients }}</text>
           <text class="stat-label">患者数量</text>
         </view>
-        <!-- <view class="stat-item">
-          <text class="stat-num">{{ stats.scans }}</text>
-          <text class="stat-label">扫码次数</text>
-        </view>
-        <view class="stat-item">
-          <text class="stat-num">{{ stats.visits }}</text>
-          <text class="stat-label">就诊次数</text>
-        </view> -->
       </view>
-    </view>
+    </view> -->
 
     <!-- 功能菜单 -->
     <view class="menu-section">

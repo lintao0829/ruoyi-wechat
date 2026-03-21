@@ -73,7 +73,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { onShow } from '@dcloudio/uni-app';
 
 const currentRecord = ref({});
@@ -88,50 +88,26 @@ const riskLevelClass = computed(() => {
   return 'low';
 });
 
-// 风险等级图片
-const riskLevelImage = computed(() => {
-  const score = currentRecord.value.totalScore || 0;
-  // 根据总分判断风险等级图片
-  if (score <= 1) {
-    return '/static/img/1.jpeg'; // 低危：0-1 分
-  } else if (score <= 4) {
-    return '/static/img/3.jpeg'; // 中危：2-4 分
-  } else if (score <= 7) {
-    return '/static/img/4.jpeg'; // 高危：5-7 分
-  } else {
-    return '/static/img/2.jpeg'; // 很高危：8-10 分（红色）
-  }
-});
-
-// 获取患者 ID
-const getPatientId = () => {
-  const userInfo = uni.getStorageSync('userInfo');
-  const data = userInfo?.data || userInfo;
-  // 从 userInfo 中获取 patientId
-  patientId.value = data?.patientId || null;
-
-  if (!patientId.value && data?.userId) {
-    // 如果没有 patientId，尝试使用 userId 作为备选
-    patientId.value = data.userId;
-  }
-};
-
 // 获取历史评分记录
-const fetchHistoryRecords = () => {
-  if (!patientId.value) {
-    console.error('未获取到 patientId');
+const fetchHistoryRecords = (patientId) => {
+  console.log('patientId===获取评分记录', patientId)
+  if (!patientId) {
+    uni.showToast({
+      title: '请先登录，才能开始评分',
+      icon: 'none'
+    });
     return;
   }
 
   uni.request({
-    url: `https://yiliao.admin.php7788.com/prod-api/system/score/record/list?patientId=${patientId.value}`,
+    url: `https://yiliao.admin.php7788.com/prod-api/system/score/record/list?patientId=${patientId}`,
     method: 'GET',
     header: {
       'Authorization': 'Bearer ' + uni.getStorageSync('token')
     },
     success: (res) => {
       console.log(res, 'res=====历史评分记录')
-      if (res.statusCode === 200 && (res.data.code === 200 || res.data.code === 0)) {
+      if (res.data.code === 200) {
         const allRecords = res.data.rows || [];
         // 最多展示前 10 条
         historyRecords.value = allRecords.slice(0, 10);
@@ -139,35 +115,42 @@ const fetchHistoryRecords = () => {
       }
     },
     fail: () => {
-      console.error('获取历史评分记录失败');
+      uni.showToast({
+        title: '获取历史评分记录失败',
+        icon: 'none'
+      });
     }
   });
 };
 
-onShow(() => {
+// 获取患者 ID
+const getPatientId = () => {
   const userInfo = uni.getStorageSync('userInfo');
-  const userType = userInfo?.userType ?? userInfo?.data?.userType;
-
-  if (userType === 0) {
-    uni.showToast({
-      title: '医生端无法访问此功能',
-      icon: 'none'
-    });
-    setTimeout(() => {
-      uni.switchTab({
-        url: '/pages/index/index'
-      });
-    }, 1000);
-    return;
+  const data = userInfo?.data || userInfo;
+  // 从 userInfo 中获取 patientId
+  console.log(data, 'data===================')
+  patientId.value = data?.patientId || null;
+  fetchHistoryRecords(patientId.value);
+  if (!patientId.value) {
+    // 未登录---清空历史记录
+    historyRecords.value = [{
+      id: 0,
+      totalScore: 0,
+      riskLevel: '',
+      createTime: '',
+      sugarScore: 0,
+      pressureScore: 0,
+      ldlScore: 0,
+      bmiScore: 0,
+      smokingScore: 0,
+    }];
   }
+};
 
+onShow(() => {
   // 获取 patientId
   getPatientId();
-
-  // 获取最新记录和历史记录
-  // fetchCurrentRecord();
-  fetchHistoryRecords();
-});
+})
 
 const goToHealth = () => {
   // 判断是否登录
@@ -184,7 +167,6 @@ const goToHealth = () => {
         url: '/packageA/login/login'
       });
     }, 1500);
-    return;
   }
 
   // 判断是否为医生端

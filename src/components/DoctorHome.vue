@@ -17,7 +17,7 @@
     </view>
 
     <!-- 功能模块 -->
-    <view class="module-grid">
+    <!-- <view class="module-grid">
       <view class="module-item" @click="goToPatientList">
         <view class="module-icon blue">
           <uni-icons type="list" size="28" color="#fff"></uni-icons>
@@ -31,7 +31,7 @@
           <uni-icons type="scan" size="28" color="#fff"></uni-icons>
         </view>
         <text class="module-name">扫码录入</text>
-        <text class="module-desc">扫描患者二维码</text>
+        <text class="module-desc">扫码添加患者</text>
       </view>
 
       <view class="module-item" @click="goToAddPatient">
@@ -46,13 +46,13 @@
         <view class="module-icon purple">
           <uni-icons type="person" size="28" color="#fff"></uni-icons>
         </view>
-        <text class="module-name">个人信息</text>
-        <text class="module-desc">修改个人资料</text>
+        <text class="module-name">个人中心</text>
+        <text class="module-desc">医生信息设置</text>
       </view>
-    </view>
+    </view> -->
 
     <!-- 今日统计 -->
-    <view class="stats-section">
+    <!-- <view class="stats-section">
       <text class="section-title">今日统计</text>
       <view class="stats-grid">
         <view class="stat-item">
@@ -68,7 +68,7 @@
           <text class="stat-label">总患者数</text>
         </view>
       </view>
-    </view>
+    </view> -->
 
     <!-- 最近患者 -->
     <view class="recent-section">
@@ -146,11 +146,96 @@ const getTodayStats = () => {
 
 // 获取最近患者
 const getRecentPatients = () => {
-  recentPatients.value = [
-    { id: 1, name: '张三', phone: '138****1234', createTime: '10:30' },
-    { id: 2, name: '李四', phone: '139****5678', createTime: '09:15' },
-    { id: 3, name: '王五', phone: '137****9012', createTime: '昨天' }
-  ];
+  // 获取当前登录医生的token
+  const token = uni.getStorageSync('token');
+  if (!token) {
+    console.log('未登录，无法获取患者数据');
+    return;
+  }
+
+  // 获取当前医生的ID
+  const doctorId = props.userInfo.userId;
+  if (!doctorId) {
+    console.log('医生ID为空，无法获取患者数据');
+    return;
+  }
+
+  // 调用患者列表接口，获取最近的患者数据
+  uni.request({
+    url: 'https://yiliao.admin.php7788.com/prod-api/system/patient/list',
+    method: 'GET',
+    timeout: 10000,
+    header: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + token
+    },
+    data: {
+      pageNum: 1,
+      pageSize: 5, // 只获取最近5个患者
+      doctorId: doctorId
+    },
+    success: (res) => {
+      if (res.statusCode === 200) {
+        const data = res.data;
+        if (data.code === 200 || data.code === 0) {
+          // 格式化患者数据
+          recentPatients.value = (data.rows || []).map(patient => ({
+            id: patient.patientId,
+            name: patient.patientName,
+            phone: patient.phone,
+            createTime: formatTime(patient.createTime)
+          }));
+        } else {
+          console.error('获取患者数据失败:', data.msg);
+        }
+      } else {
+        console.error('请求失败，状态码:', res.statusCode);
+      }
+    },
+    fail: (err) => {
+      console.error('获取最近患者失败:', err);
+    }
+  });
+};
+
+// 格式化时间
+const formatTime = (timeStr) => {
+  if (!timeStr) return '';
+  
+  try {
+    const date = new Date(timeStr);
+    const now = new Date();
+    const diff = now - date;
+    
+    // 小于1分钟
+    if (diff < 60000) {
+      return '刚刚';
+    }
+    
+    // 小于1小时
+    if (diff < 3600000) {
+      const minutes = Math.floor(diff / 60000);
+      return minutes + '分钟前';
+    }
+    
+    // 小于1天
+    if (diff < 86400000) {
+      const hours = Math.floor(diff / 3600000);
+      return hours + '小时前';
+    }
+    
+    // 小于7天
+    if (diff < 604800000) {
+      const days = Math.floor(diff / 86400000);
+      return days + '天前';
+    }
+    
+    // 超过7天，显示具体日期
+    return date.toLocaleDateString('zh-CN');
+  } catch (error) {
+    console.error('时间格式化失败:', error);
+    return timeStr;
+  }
 };
 
 // 跳转到扫码页面
@@ -185,6 +270,7 @@ const goToProfile = () => {
 const goToPatientDetail = (patient) => {
   uni.navigateTo({
     url: '/pages/patient-detail/patient-detail?id=' + patient.id
+    // /prod-api/system/patient/12
   });
 };
 </script>
@@ -196,14 +282,29 @@ const goToPatientDetail = (patient) => {
   padding-bottom: 30px;
 }
 
-/* 头部区域 */
 .header {
-  background: linear-gradient(135deg, #1890ff, #36cfc9);
-  padding: 50px 20px 30px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 40px 20px 60px;
   border-radius: 0 0 20px 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('/static/img/fNL6xQg8c.jpeg') center/cover;
+  opacity: 0.3;
+  z-index: 0;
 }
 
 .header-content {
+  position: relative;
+  z-index: 1;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -212,6 +313,7 @@ const goToPatientDetail = (patient) => {
 .user-info {
   display: flex;
   align-items: center;
+  gap: 15px;
 }
 
 .avatar {
@@ -219,53 +321,64 @@ const goToPatientDetail = (patient) => {
   height: 60px;
   border-radius: 50%;
   border: 3px solid rgba(255, 255, 255, 0.3);
+  background-color: #fff;
 }
 
 .user-text {
-  margin-left: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
 }
 
 .user-name {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: bold;
   color: #fff;
-  display: block;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .user-role {
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.8);
-  margin-top: 5px;
-  display: block;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .scan-btn {
-  width: 45px;
-  height: 45px;
-  background-color: rgba(255, 255, 255, 0.2);
+  width: 50px;
+  height: 50px;
+  background: rgba(255, 255, 255, 0.2);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
-/* 功能模块 */
 .module-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 15px;
   padding: 20px;
-  margin-top: -10px;
+  margin-top: -30px;
+  position: relative;
+  z-index: 2;
 }
 
 .module-item {
-  background-color: #fff;
-  border-radius: 12px;
+  background: #fff;
+  border-radius: 16px;
   padding: 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  gap: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease;
+}
+
+.module-item:active {
+  transform: translateY(-2px);
 }
 
 .module-icon {
@@ -275,30 +388,28 @@ const goToPatientDetail = (patient) => {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 10px;
 }
 
 .module-icon.blue {
-  background: linear-gradient(135deg, #1890ff, #69c0ff);
+  background: linear-gradient(135deg, #1890ff, #096dd9);
 }
 
 .module-icon.green {
-  background: linear-gradient(135deg, #52c41a, #95de64);
+  background: linear-gradient(135deg, #52c41a, #389e0d);
 }
 
 .module-icon.orange {
-  background: linear-gradient(135deg, #fa8c16, #ffc53d);
+  background: linear-gradient(135deg, #fa8c16, #d48806);
 }
 
 .module-icon.purple {
-  background: linear-gradient(135deg, #722ed1, #b37feb);
+  background: linear-gradient(135deg, #722ed1, #531dab);
 }
 
 .module-name {
-  font-size: 15px;
-  font-weight: bold;
+  font-size: 16px;
+  font-weight: 600;
   color: #333;
-  margin-bottom: 4px;
 }
 
 .module-desc {
@@ -306,30 +417,33 @@ const goToPatientDetail = (patient) => {
   color: #999;
 }
 
-/* 统计区域 */
 .stats-section {
-  background-color: #fff;
-  margin: 0 20px 15px;
+  margin: 20px;
+  background: #fff;
+  border-radius: 16px;
   padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
 .section-title {
-  font-size: 16px;
-  font-weight: bold;
+  font-size: 18px;
+  font-weight: 600;
   color: #333;
-  margin-bottom: 15px;
+  margin-bottom: 20px;
   display: block;
 }
 
 .stats-grid {
-  display: flex;
-  justify-content: space-around;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
 }
 
 .stat-item {
   text-align: center;
+  padding: 15px;
+  background: linear-gradient(135deg, #f5f5f5, #e8e8e8);
+  border-radius: 12px;
 }
 
 .stat-num {
@@ -337,77 +451,79 @@ const goToPatientDetail = (patient) => {
   font-weight: bold;
   color: #1890ff;
   display: block;
+  margin-bottom: 5px;
 }
 
 .stat-label {
-  font-size: 13px;
-  color: #999;
-  margin-top: 5px;
-  display: block;
+  font-size: 12px;
+  color: #666;
 }
 
-/* 最近患者 */
 .recent-section {
-  background-color: #fff;
-  margin: 0 20px 15px;
+  margin: 20px;
+  background: #fff;
+  border-radius: 16px;
   padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
 .section-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 15px;
+  margin-bottom: 20px;
 }
 
 .more-link {
-  font-size: 13px;
+  font-size: 14px;
   color: #1890ff;
 }
 
 .patient-list {
-  border-top: 1px solid #f0f0f0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .patient-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px 0;
-  border-bottom: 1px solid #f0f0f0;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  transition: background-color 0.3s ease;
 }
 
-.patient-item:last-child {
-  border-bottom: none;
+.patient-item:active {
+  background-color: #e9ecef;
 }
 
 .patient-info {
   display: flex;
   flex-direction: column;
+  gap: 5px;
 }
 
 .patient-name {
-  font-size: 15px;
-  font-weight: bold;
+  font-size: 16px;
+  font-weight: 500;
   color: #333;
 }
 
 .patient-phone {
-  font-size: 13px;
-  color: #999;
-  margin-top: 4px;
+  font-size: 14px;
+  color: #666;
 }
 
 .patient-time {
-  font-size: 13px;
+  font-size: 12px;
   color: #999;
 }
 
 .empty-tip {
   text-align: center;
-  padding: 30px 0;
+  padding: 40px;
   color: #999;
   font-size: 14px;
 }

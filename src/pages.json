@@ -73,14 +73,6 @@
 			}
 		},
 		{
-			"path": "pages/patient-edit/patient-edit",
-			"style": {
-				"navigationBarTitleText": "患者信息",
-				"navigationBarTextStyle": "black",
-				"navigationBarBackgroundColor": "#fff"
-			}
-		},
-		{
 			"path": "pages/patient-detail/patient-detail",
 			"style": {
 				"navigationBarTitleText": "患者详情",

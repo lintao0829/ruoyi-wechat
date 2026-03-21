@@ -14,7 +14,8 @@
       </view>
       <view class="qrcode-container">
         <view class="qrcode">
-          <image :src="isLogin ? riskLevelImage : '/static/logo.png'" mode="aspectFit" :style="isLogin ? 'width: 300px; height: 120px;' : 'width: 200px; height: 200px;'"></image>
+          <image :src="isLogin ? riskLevelImage : '/static/logo.png'" mode="aspectFit"
+            :style="isLogin ? 'width: 300px; height: 120px;' : 'width: 200px; height: 200px;'"></image>
         </view>
         <text class="qrcode-text">{{ isLogin ? riskLevelText : '未登录或者未绑定医生，无法展示您的健康码' }}</text>
       </view>
@@ -23,92 +24,82 @@
       <view class="doctor-message">
         <view class="message-header">
           <view class="header-left">
-            <text class="message-title">医生留言</text>
+            <text class="message-title">就诊记录</text>
             <text class="message-subtitle">您的健康管理建议</text>
           </view>
         </view>
 
-        <!-- 有患者信息时显示 -->
-        <view class="patient-info-card" v-if="patientData.patientId && isLogin">
-          <!-- 基础信息卡片 -->
-          <view class="info-card">
-            <view class="info-row">
-              <view class="info-item">
-                <text class="info-label">主治医师</text>
-                <text class="info-value primary">{{ patientData.doctorName || '-' }}</text>
+        <!-- 就诊记录卡片列表 -->
+        <view class="record-cards">
+          <view class="record-card" v-for="(record, index) in medicalRecords" :key="record.recordId">
+            <!-- 卡片头部 -->
+            <view class="card-header">
+              <view class="card-info">
+                <text class="card-title">就诊记录 {{ index + 1 }}</text>
+                <text class="card-time">{{ record.createTime }}</text>
               </view>
-              <view class="info-item">
-                <text class="info-label">就诊时间</text>
-                <text class="info-value">{{ patientData.visitTime || '-' }}</text>
+              <text class="risk-badge" :class="getRiskClass(record.riskLevel)">{{ record.riskLevel }}</text>
+            </view>
+
+            <!-- 评分结果 -->
+            <view class="card-section score-section">
+              <view class="section-header">
+                <uni-icons type="star-filled" size="14" color="#1890ff"></uni-icons>
+                <text class="section-title">评分结果</text>
+              </view>
+              <view class="score-content">
+                <view class="score-item">
+                  <text class="score-label">总评分</text>
+                  <text class="score-value" :class="getScoreClass(record.totalScore)">{{ record.totalScore }}分</text>
+                </view>
+                <view class="score-detail">
+                  <text class="detail-item">血糖: {{ record.sugarScore }}分</text>
+                  <text class="detail-item">血压: {{ record.pressureScore }}分</text>
+                  <text class="detail-item">血脂: {{ record.ldlScore }}分</text>
+                  <text class="detail-item">BMI: {{ record.bmiScore }}分</text>
+                  <text class="detail-item">吸烟: {{ record.smokingScore }}分</text>
+                </view>
+              </view>
+            </view>
+
+            <!-- 诊断结果 -->
+            <view class="card-section" v-if="record.diagnosisResult">
+              <view class="section-header">
+                <uni-icons type="flag-filled" size="14" color="#ff4d4f"></uni-icons>
+                <text class="section-title">诊断结果</text>
+              </view>
+              <view class="section-content diagnosis-content">
+                <text class="section-text">{{ record.diagnosisResult }}</text>
+              </view>
+            </view>
+
+            <!-- 治疗建议 -->
+            <view class="card-section" v-if="record.treatmentSuggestion">
+              <view class="section-header">
+                <uni-icons type="chatbubble-filled" size="14" color="#52c41a"></uni-icons>
+                <text class="section-title">治疗建议</text>
+              </view>
+              <view class="section-content suggestion-content">
+                <text class="section-text">{{ record.treatmentSuggestion }}</text>
+              </view>
+            </view>
+
+            <!-- 病历图片 -->
+            <view class="card-section" v-if="record.imgList && record.imgList.length > 0">
+              <view class="section-header">
+                <uni-icons type="image-filled" size="14" color="#1890ff"></uni-icons>
+                <text class="section-title">病历图片</text>
+              </view>
+              <view class="img-container">
+                <scroll-view class="img-scroll" scroll-x="true">
+                  <view class="img-list">
+                    <image v-for="(img, imgIndex) in record.imgList" :key="imgIndex" :src="img" class="medical-img"
+                      mode="aspectFill" @click="previewRecordImg(record.imgList, imgIndex)"></image>
+                  </view>
+                </scroll-view>
               </view>
             </view>
           </view>
-
-          <!-- 病历图片 -->
-          <view class="section" v-if="medicalRecordImgList && medicalRecordImgList.length > 0">
-            <view class="section-header">
-              <uni-icons type="image" size="16" color="#1890ff"></uni-icons>
-              <text class="section-title">病历图片</text>
-            </view>
-            <scroll-view class="img-scroll" scroll-x="true">
-              <view class="img-list">
-                <image v-for="(img, index) in medicalRecordImgList" :key="index" :src="img.url" class="medical-img"
-                  mode="aspectFill" @click="previewImg(index)"></image>
-              </view>
-            </scroll-view>
-          </view>
-
-          <!-- 诊断结果 -->
-          <view class="section diagnosis-section" v-if="patientData.diagnosisResult">
-            <view class="section-header">
-              <uni-icons type="flag" size="16" color="#ff4d4f"></uni-icons>
-              <text class="section-title">诊断结果</text>
-            </view>
-            <view class="diagnosis-box">
-              <text class="diagnosis-text">{{ patientData.diagnosisResult }}</text>
-            </view>
-          </view>
-
-          <!-- 治疗建议 -->
-          <view class="section" v-if="patientData.treatmentSuggestion">
-            <view class="section-header">
-              <uni-icons type="chatbubble" size="16" color="#52c41a"></uni-icons>
-              <text class="section-title">治疗建议</text>
-            </view>
-            <view class="suggestion-box">
-              <text class="suggestion-text">{{ patientData.treatmentSuggestion }}</text>
-            </view>
-          </view>
-
-          <!-- 病例备注 -->
-          <view class="section" v-if="patientData.remark">
-            <view class="section-header">
-              <uni-icons type="file" size="16" color="#fa8c16"></uni-icons>
-              <text class="section-title">病例备注</text>
-            </view>
-            <view class="remark-box">
-              <text class="remark-text">{{ patientData.remark }}</text>
-            </view>
-          </view>
-
-          <!-- 更新时间 -->
-          <view class="update-time" v-if="patientData.updateTime">
-            <uni-icons type="time" size="12" color="#999"></uni-icons>
-            <text>更新于 {{ patientData.updateTime }}</text>
-          </view>
-        </view>
-
-        <!-- 无患者信息时显示空状态 -->
-        <view class="empty-state" v-else-if="!isLogin">
-          <image src="/static/img/fNL9ufsp0.jpeg" mode="aspectFit" class="empty-img"></image>
-          <text class="empty-text">请先登录查看医生留言~</text>
-          <button class="login-btn" @click="goToLogin">立即登录</button>
-        </view>
-
-        <!-- 登录后无患者信息 -->
-        <view class="empty-state" v-else>
-          <image src="/static/img/fNL9ufsp0.jpeg" mode="aspectFit" class="empty-img"></image>
-          <text class="empty-text">暂无医生留言~</text>
         </view>
       </view>
     </template>
@@ -131,9 +122,47 @@ const patientData = ref({});
 // 病历图片列表
 const medicalRecordImgList = ref([]);
 // 风险等级图片
-const riskLevelImage = ref('/static/img/1.jpeg');
+const riskLevelImage = ref('/static/logo.png');
 // 风险等级文字
 const riskLevelText = ref('请先登录查看健康码');
+// 就诊记录列表（假数据）
+const medicalRecords = ref([
+  // {
+  //   recordId: 15,
+  //   createTime: '2026-03-20 21:40:02',
+  //   totalScore: 5,
+  //   riskLevel: '高危',
+  //   sugarScore: 0,
+  //   pressureScore: 0,
+  //   ldlScore: 2,
+  //   bmiScore: 2,
+  //   smokingScore: 1,
+  //   diagnosisResult: '患者血糖控制不佳，血压正常，血脂偏高，BMI超标，吸烟量较大。综合评估为高危人群，需要立即采取干预措施。',
+  //   treatmentSuggestion: '1. 建议立即戒烟，减少心血管风险因素\n2. 控制血糖，定期监测空腹及餐后血糖\n3. 调整饮食结构，减少高脂高糖食物摄入\n4. 增加有氧运动，每周至少150分钟中等强度运动\n5. 定期复查血脂，必要时启动降脂治疗',
+  //   imgList: [
+  //     'https://yiliao.admin.php7788.com/profile/record/2026/03/20/2b812402-df53-4470-abd3-18428b548abc_20260320213959A013.png',
+  //     'https://yiliao.admin.php7788.com/profile/record/2026/03/20/04c1408b-0545-4299-adc0-ddc2564eb2aa_20260320214746A014.png'
+  //   ]
+  // },
+  // {
+  //   recordId: 13,
+  //   createTime: '2026-03-20 17:18:06',
+  //   totalScore: 7,
+  //   riskLevel: '高危',
+  //   sugarScore: 2,
+  //   pressureScore: 0,
+  //   ldlScore: 2,
+  //   bmiScore: 2,
+  //   smokingScore: 1,
+  //   diagnosisResult: '诊断结果修改：患者近期血糖波动较大，血压控制良好，血脂水平持续偏高，体重超标情况未改善，吸烟习惯仍未戒除。',
+  //   treatmentSuggestion: '治疗建议修改：\n1. 加强血糖监测频率，建议每日监测4次\n2. 调整降糖药物方案，考虑加用二甲双胍\n3. 严格控制饮食，减少碳水化合物摄入\n4. 建议参加戒烟门诊，获取专业戒烟指导\n5. 每月复诊一次，评估治疗效果',
+  //   imgList: [
+  //     'https://yiliao.admin.php7788.com/profile/record/2026/03/20/123_20260320210522A008.png',
+  //     'https://yiliao.admin.php7788.com/profile/record/2026/03/20/avator_20260320210903A009.png',
+  //     'https://yiliao.admin.php7788.com/profile/record/2026/03/20/img_20260320210908A010.jpeg'
+  //   ]
+  // }
+]);
 
 // 页面加载
 // onMounted(() => {
@@ -144,7 +173,28 @@ const riskLevelText = ref('请先登录查看健康码');
 onShow(() => {
   getUserInfo();
 });
+// 获取就诊记录
+const getRecordList = (patientId) => {
+  if (!patientId) {
+    return;
+  }
+  uni.request({
+    url: 'https://yiliao.admin.php7788.com/prod-api/system/patient/' + patientId,
+    method: 'GET',
+    timeout: 10000,
+    header: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + uni.getStorageSync('token')
+    },
+    success: (res) => {
+      console.log(res);
 
+      if (res.data.code === 200) {
+        medicalRecords.value = res.data.data.list || [];
+      }
+    }
+  })
+}
 // 获取用户信息
 const getUserInfo = () => {
   const token = uni.getStorageSync('token');
@@ -164,15 +214,15 @@ const getUserInfo = () => {
       'Authorization': 'Bearer ' + token
     },
     success: (res) => {
-      if (res.statusCode === 200) {
-        const datass = res.data;
-        if (datass.code === 200 || datass.code === 0) {
-          userInfo.value = datass.data;
+      console.log(res, 'res=====用户信息')
+      if (res.data.code === 200) {
+          userInfo.value = res.data.data;
           // 根据userType判断：0是医生，1是用户
-          userType.value = datass.data.userType === 0 ? 0 : 1;
-          uni.setStorageSync('userInfo', datass.data);
-          getPatientInfo(datass.data.patientId);
-        }
+          userType.value = res.data.data.userType === 0 ? 0 : 1;
+          uni.setStorageSync('userInfo', res.data.data);
+          // getPatientInfo(res.data.data.patientId);
+          getRecordList(res.data.data.patientId);
+          getScoreRecord(res.data.data.patientId);
       }
     },
     fail: (err) => {
@@ -188,50 +238,50 @@ const goToLogin = () => {
 };
 
 // 获取患者信息
-const getPatientInfo = (patientId) => {
-  if (!patientId) {
-    return;
-  }
-  
-  uni.request({
-    url: 'https://yiliao.admin.php7788.com/prod-api/system/patient/' + patientId,
-    method: 'GET',
-    timeout: 10000,
-    header: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + uni.getStorageSync('token')
-    },
-    success: (res) => {
-      if (res.statusCode === 200) {
-        const data = res.data;
-        if (data.code === 200 || data.code === 0) {
-          patientData.value = data.data || {};
-          // 处理病历图片的回显
-          medicalRecordImgList.value = [];
-          if (patientData.value.imgUrl) {
-            const imgUrls = patientData.value.imgUrl.split(',').filter(url => url.trim());
-            medicalRecordImgList.value = imgUrls.map(url => {
-              let imgUrl = url.trim();
-              // 如果已经是完整 URL，直接返回
-              if (imgUrl.startsWith('http')) {
-                return { url: imgUrl };
-              }
-              // 去掉开头的 / 和 ` 符号，然后拼接
-              imgUrl = imgUrl.replace(/^[\/`]+/, '');
-              return { url: 'https://yiliao.admin.php7788.com/prod-api/' + imgUrl };
-            });
-          }
-          
-          // 获取最新评分记录
-          getScoreRecord(patientId);
-        }
-      }
-    },
-    fail: (err) => {
-      console.error('获取患者信息失败:', err);
-    }
-  });
-};
+// const getPatientInfo = (patientId) => {
+//   if (!patientId) {
+//     return;
+//   }
+
+//   uni.request({
+//     url: 'https://yiliao.admin.php7788.com/prod-api/system/patient/' + patientId,
+//     method: 'GET',
+//     timeout: 10000,
+//     header: {
+//       'Content-Type': 'application/json',
+//       'Authorization': 'Bearer ' + uni.getStorageSync('token')
+//     },
+//     success: (res) => {
+//       if (res.statusCode === 200) {
+//         const data = res.data;
+//         if (data.code === 200 || data.code === 0) {
+//           patientData.value = data.data || {};
+//           // 处理病历图片的回显
+//           medicalRecordImgList.value = [];
+//           if (patientData.value.imgUrl) {
+//             const imgUrls = patientData.value.imgUrl.split(',').filter(url => url.trim());
+//             medicalRecordImgList.value = imgUrls.map(url => {
+//               let imgUrl = url.trim();
+//               // 如果已经是完整 URL，直接返回
+//               if (imgUrl.startsWith('http')) {
+//                 return { url: imgUrl };
+//               }
+//               // 去掉开头的 / 和 ` 符号，然后拼接
+//               imgUrl = imgUrl.replace(/^[\/`]+/, '');
+//               return { url: 'https://yiliao.admin.php7788.com/prod-api/' + imgUrl };
+//             });
+//           }
+
+//           // 获取最新评分记录
+//           getScoreRecord(patientId);
+//         }
+//       }
+//     },
+//     fail: (err) => {
+//       console.error('获取患者信息失败:', err);
+//     }
+//   });
+// };
 
 // 获取评分记录
 const getScoreRecord = (patientId) => {
@@ -251,7 +301,7 @@ const getScoreRecord = (patientId) => {
           if (records.length > 0) {
             const latestRecord = records[0];
             const totalScore = latestRecord.totalScore || 0;
-            
+
             // 根据总分设置风险等级图片和文字
             if (totalScore <= 1) {
               riskLevelImage.value = '/static/img/1.jpeg'; // 低危：0-1 分
@@ -288,6 +338,38 @@ const previewImg = (currentIndex) => {
     current: currentIndex,
     urls: urls
   });
+};
+
+// 预览就诊记录图片
+const previewRecordImg = (imgList, currentIndex) => {
+  uni.previewImage({
+    current: currentIndex,
+    urls: imgList
+  });
+};
+
+// 获取风险等级样式类
+const getRiskClass = (riskLevel) => {
+  switch (riskLevel) {
+    case '低危':
+      return 'risk-low';
+    case '中危':
+      return 'risk-medium';
+    case '高危':
+      return 'risk-high';
+    case '很高危':
+      return 'risk-very-high';
+    default:
+      return 'risk-normal';
+  }
+};
+
+// 获取评分样式类
+const getScoreClass = (score) => {
+  if (score <= 1) return 'score-low';
+  if (score <= 4) return 'score-medium';
+  if (score <= 7) return 'score-high';
+  return 'score-very-high';
 };
 </script>
 
@@ -628,5 +710,205 @@ const previewImg = (currentIndex) => {
   border-radius: 25px;
   font-size: 15px;
   border: none;
+}
+
+/* 就诊记录卡片列表 */
+.record-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* 记录卡片 */
+.record-card {
+  background-color: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  border: 1px solid #f0f0f0;
+}
+
+/* 卡片头部 */
+.card-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.card-title {
+  font-size: 16px;
+  font-weight: bold;
+  color: #fff;
+}
+
+.card-time {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.risk-badge {
+  font-size: 12px;
+  font-weight: bold;
+  padding: 6px 14px;
+  border-radius: 20px;
+  background-color: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+.risk-badge.risk-low {
+  background-color: rgba(82, 196, 26, 0.9);
+}
+
+.risk-badge.risk-medium {
+  background-color: rgba(250, 173, 20, 0.9);
+}
+
+.risk-badge.risk-high {
+  background-color: rgba(250, 140, 22, 0.9);
+}
+
+.risk-badge.risk-very-high {
+  background-color: rgba(255, 77, 79, 0.9);
+}
+
+/* 卡片区块 */
+.card-section {
+  padding: 16px 20px;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.card-section:last-child {
+  border-bottom: none;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.section-title {
+  font-size: 15px;
+  font-weight: bold;
+  color: #333;
+}
+
+.section-content {
+  background-color: #fafafa;
+  padding: 14px;
+  border-radius: 10px;
+}
+
+.section-text {
+  font-size: 14px;
+  color: #333;
+  line-height: 1.8;
+  white-space: pre-wrap;
+}
+
+/* 评分区块 */
+.score-section {
+  background-color: #f8faff;
+}
+
+.score-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.score-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background-color: #fff;
+  border-radius: 10px;
+  border: 1px solid #e8e8e8;
+}
+
+.score-label {
+  font-size: 14px;
+  color: #666;
+}
+
+.score-value {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.score-value.score-low {
+  color: #52c41a;
+}
+
+.score-value.score-medium {
+  color: #faad14;
+}
+
+.score-value.score-high {
+  color: #fa8c16;
+}
+
+.score-value.score-very-high {
+  color: #ff4d4f;
+}
+
+.score-detail {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.detail-item {
+  font-size: 12px;
+  color: #666;
+  background-color: #fff;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #e8e8e8;
+}
+
+/* 诊断结果 */
+.diagnosis-content {
+  background: linear-gradient(to right, #fff2f0, #fff);
+  border-left: 3px solid #ff4d4f;
+}
+
+/* 治疗建议 */
+.suggestion-content {
+  background: linear-gradient(to right, #f6ffed, #fff);
+  border-left: 3px solid #52c41a;
+}
+
+/* 病历图片区域 */
+.img-container {
+  margin-top: 10px;
+}
+
+.img-scroll {
+  width: 100%;
+  white-space: nowrap;
+}
+
+.img-list {
+  display: flex;
+  gap: 10px;
+}
+
+.medical-img {
+  width: 100px;
+  height: 100px;
+  border-radius: 8px;
+  flex-shrink: 0;
+  border: 1px solid #eee;
 }
 </style>

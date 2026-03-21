@@ -38,7 +38,7 @@
             <input 
               type="text" 
               v-model="form.username" 
-              placeholder="请输入账号" 
+              placeholder="请输入账号（姓名）" 
               class="input-field"
             />
           </view>
