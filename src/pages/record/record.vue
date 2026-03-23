@@ -52,7 +52,7 @@
         <text class="risk-level" :class="riskLevelClass">{{ currentRecord.riskLevel || '低风险' }}</text>
       </view>
       <!-- 展示评分二维码 -->
-      <view class="risk-image-section">
+      <view class="risk-image-section" v-if="isLogin">
         <image :src="riskLevelImage" mode="aspectFit" class="risk-level-img"></image>
         <text class="risk-image-text">{{ riskLevelText }}</text>
       </view>
@@ -84,6 +84,14 @@ import { onShow } from '@dcloudio/uni-app';
 const currentRecord = ref({});
 const historyRecords = ref([]);
 const patientId = ref(null);
+
+const isLogin = ref(false);
+
+onMounted(() => {
+  isLogin.value = uni.getStorageSync('isLogin') || false;
+});
+
+
 
 // 风险等级样式类
 const riskLevelClass = computed(() => {
