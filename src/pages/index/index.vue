@@ -332,16 +332,16 @@ const getScoreRecord = (patientId) => {
 
             // 根据总分设置风险等级图片和文字
             if (totalScore <= 1) {
-              riskLevelImage.value = '/static/img/1.jpeg'; // 低危：0-1 分
+              riskLevelImage.value = '/static/img/11.jpeg'; // 低危：0-1 分
               riskLevelText.value = '低危：0-1 分';
             } else if (totalScore <= 4) {
-              riskLevelImage.value = '/static/img/3.jpeg'; // 中危：2-4 分
+              riskLevelImage.value = '/static/img/22.jpeg'; // 中危：2-4 分
               riskLevelText.value = '中危：2-4 分';
             } else if (totalScore <= 7) {
-              riskLevelImage.value = '/static/img/4.jpeg'; // 高危：5-7 分
+              riskLevelImage.value = '/static/img/33.jpeg'; // 高危：5-7 分
               riskLevelText.value = '高危：5-7 分';
             } else {
-              riskLevelImage.value = '/static/img/2.jpeg'; // 很高危：8-10 分（红色）
+              riskLevelImage.value = '/static/img/44.jpeg'; // 很高危：8-10 分（红色）
               riskLevelText.value = '很高危：8-10 分';
             }
           } else {

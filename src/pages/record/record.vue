@@ -51,6 +51,11 @@
         <text class="total-value">{{ currentRecord.totalScore || 0 }}分</text>
         <text class="risk-level" :class="riskLevelClass">{{ currentRecord.riskLevel || '低风险' }}</text>
       </view>
+      <!-- 展示评分二维码 -->
+      <view class="risk-image-section">
+        <image :src="riskLevelImage" mode="aspectFit" class="risk-level-img"></image>
+        <text class="risk-image-text">{{ riskLevelText }}</text>
+      </view>
     </view>
     <view class="history-section">
       <text class="history-title">历史评分记录</text>
@@ -86,6 +91,34 @@ const riskLevelClass = computed(() => {
   if (level.includes('高')) return 'high';
   if (level.includes('中')) return 'medium';
   return 'low';
+});
+
+// 风险等级图片
+const riskLevelImage = computed(() => {
+  const totalScore = currentRecord.value.totalScore || 0;
+  if (totalScore <= 1) {
+    return '/static/img/11.jpeg'; // 低危：0-1 分
+  } else if (totalScore <= 4) {
+    return '/static/img/22.jpeg'; // 中危：2-4 分
+  } else if (totalScore <= 7) {
+    return '/static/img/33.jpeg'; // 高危：5-7 分
+  } else {
+    return '/static/img/44.jpeg'; // 很高危：8-10 分
+  }
+});
+
+// 风险等级文字
+const riskLevelText = computed(() => {
+  const totalScore = currentRecord.value.totalScore || 0;
+  if (totalScore <= 1) {
+    return '低危：0-1 分';
+  } else if (totalScore <= 4) {
+    return '中危：2-4 分';
+  } else if (totalScore <= 7) {
+    return '高危：5-7 分';
+  } else {
+    return '很高危：8-10 分';
+  }
 });
 
 // 获取历史评分记录
@@ -360,6 +393,29 @@ const viewRecordDetail = (recordId) => {
 .risk-level.low {
   background-color: #d4edda;
   color: #28a745;
+}
+
+/* 风险等级图片区域 */
+.risk-image-section {
+  margin-top: 20px;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.risk-level-img {
+  width: 200px;
+  height: 200px;
+  border-radius: 8px;
+}
+
+.risk-image-text {
+  display: block;
+  margin-top: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
 }
 
 .history-section {

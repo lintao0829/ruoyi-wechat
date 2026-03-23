@@ -19,19 +19,19 @@
         <text class="section-title">"ABCOS"健康码</text>
         <view style="display: flex; justify-content: space-between; flex-wrap: nowrap; gap: 5px;">
           <view class="qrcode-item">
-            <image src="/static/img/1.jpeg" mode="aspectFit" class="qrcode-img"></image>
+            <image src="/static/img/11.jpeg" mode="aspectFit" class="qrcode-img"></image>
             <text class="qrcode-label">低危</text>
           </view>
           <view class="qrcode-item">
-            <image src="/static/img/2.jpeg" mode="aspectFit" class="qrcode-img"></image>
+            <image src="/static/img/22.jpeg" mode="aspectFit" class="qrcode-img"></image>
             <text class="qrcode-label">中危</text>
           </view>
           <view class="qrcode-item">
-            <image src="/static/img/3.jpeg" mode="aspectFit" class="qrcode-img"></image>
+            <image src="/static/img/33.jpeg" mode="aspectFit" class="qrcode-img"></image>
             <text class="qrcode-label">高危</text>
           </view>
           <view class="qrcode-item">
-            <image src="/static/img/4.jpeg" mode="aspectFit" class="qrcode-img"></image>
+            <image src="/static/img/44.jpeg" mode="aspectFit" class="qrcode-img"></image>
             <text class="qrcode-label">很高危</text>
           </view>
         </view>
