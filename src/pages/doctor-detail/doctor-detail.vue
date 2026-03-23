@@ -62,36 +62,27 @@
 
         <!-- 联系方式 -->
         <view class="contact-section">
-          <view class="section-header">
+          <!-- <view class="section-header">
             <uni-icons type="phone" size="16" color="#52c41a"></uni-icons>
             <text class="section-title">联系方式</text>
-          </view>
-          <view class="contact-grid">
-            <view class="contact-item" v-if="doctor.phonenumber">
+          </view> -->
+          <!-- <view class="contact-grid"> -->
+            <!-- <view class="contact-item" v-if="doctor.phonenumber">
               <image src="/static/icon/lianxidianhua.png" class="contact-icon-img"></image>
               <view class="contact-info">
                 <text class="contact-label">联系电话</text>
                 <text class="contact-value">{{ doctor.phonenumber }}</text>
               </view>
               <uni-icons type="right" size="14" color="#ccc"></uni-icons>
-            </view>
-            <view class="contact-item" v-if="doctor.email">
+            </view> -->
+            <!-- <view class="contact-item" v-if="doctor.email">
               <image src="/static/icon/youxiang.png" class="contact-icon-img"></image>
               <view class="contact-info">
                 <text class="contact-label">邮箱</text>
                 <text class="contact-value">{{ doctor.email }}</text>
               </view>
-            </view>
-            <view class="contact-item" v-if="doctor.address">
-              <view class="contact-icon address">
-                <uni-icons type="location" size="18" color="#fff"></uni-icons>
-              </view>
-              <view class="contact-info">
-                <text class="contact-label">坐诊地址</text>
-                <text class="contact-value">{{ doctor.address }}</text>
-              </view>
-            </view>
-          </view>
+            </view> -->
+          <!-- </view> -->
         </view>
 
         <!-- 操作按钮 -->

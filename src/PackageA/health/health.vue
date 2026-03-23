@@ -88,7 +88,7 @@ const saveData = () => {
     });
     return;
   }
-  form.value.doctorId = uni.getStorageSync('userInfo').doctorId;
+  // form.value.doctorId = uni.getStorageSync('userInfo').doctorId;
   form.value.patientId = uni.getStorageSync('userInfo').patientId;
   console.log(form.value,'评分form.value=====')
   // return false;

@@ -30,7 +30,7 @@
         </view>
 
         <!-- 就诊记录卡片列表 -->
-        <view class="record-cards">
+        <view class="record-cards" v-if="medicalRecords.length > 0">
           <view class="record-card" v-for="(record, index) in medicalRecords" :key="record.recordId">
             <!-- 卡片头部 -->
             <view class="card-header">
@@ -39,6 +39,24 @@
                 <text class="card-time">{{ record.createTime }}</text>
               </view>
               <text class="risk-badge" :class="getRiskClass(record.riskLevel)">{{ record.riskLevel }}</text>
+            </view>
+
+            <!-- 医生信息 -->
+            <view class="card-section doctor-section">
+              <view class="section-header">
+                <uni-icons type="person-filled" size="14" color="#667eea"></uni-icons>
+                <text class="section-title">就诊医生</text>
+              </view>
+              <view class="doctor-content">
+                <view class="doctor-item">
+                  <text class="doctor-label">科室</text>
+                  <text class="doctor-value">{{ record.department || '未填写' }}</text>
+                </view>
+                <view class="doctor-item">
+                  <text class="doctor-label">医生</text>
+                  <text class="doctor-value">{{ record.doctorName || '未填写' }}</text>
+                </view>
+              </view>
             </view>
 
             <!-- 评分结果 -->
@@ -101,6 +119,12 @@
             </view>
           </view>
         </view>
+
+        <!-- 空状态提示 -->
+        <view class="empty-state" v-else>
+          <image src="/static/img/fNL9ufsp0.jpeg" mode="aspectFit" class="empty-img"></image>
+          <text class="empty-text">暂无就诊记录~</text>
+        </view>
       </view>
     </template>
   </view>
@@ -127,41 +151,45 @@ const riskLevelImage = ref('/static/logo.png');
 const riskLevelText = ref('请先登录查看健康码');
 // 就诊记录列表（假数据）
 const medicalRecords = ref([
-  // {
-  //   recordId: 15,
-  //   createTime: '2026-03-20 21:40:02',
-  //   totalScore: 5,
-  //   riskLevel: '高危',
-  //   sugarScore: 0,
-  //   pressureScore: 0,
-  //   ldlScore: 2,
-  //   bmiScore: 2,
-  //   smokingScore: 1,
-  //   diagnosisResult: '患者血糖控制不佳，血压正常，血脂偏高，BMI超标，吸烟量较大。综合评估为高危人群，需要立即采取干预措施。',
-  //   treatmentSuggestion: '1. 建议立即戒烟，减少心血管风险因素\n2. 控制血糖，定期监测空腹及餐后血糖\n3. 调整饮食结构，减少高脂高糖食物摄入\n4. 增加有氧运动，每周至少150分钟中等强度运动\n5. 定期复查血脂，必要时启动降脂治疗',
-  //   imgList: [
-  //     'https://yiliao.admin.php7788.com/profile/record/2026/03/20/2b812402-df53-4470-abd3-18428b548abc_20260320213959A013.png',
-  //     'https://yiliao.admin.php7788.com/profile/record/2026/03/20/04c1408b-0545-4299-adc0-ddc2564eb2aa_20260320214746A014.png'
-  //   ]
-  // },
-  // {
-  //   recordId: 13,
-  //   createTime: '2026-03-20 17:18:06',
-  //   totalScore: 7,
-  //   riskLevel: '高危',
-  //   sugarScore: 2,
-  //   pressureScore: 0,
-  //   ldlScore: 2,
-  //   bmiScore: 2,
-  //   smokingScore: 1,
-  //   diagnosisResult: '诊断结果修改：患者近期血糖波动较大，血压控制良好，血脂水平持续偏高，体重超标情况未改善，吸烟习惯仍未戒除。',
-  //   treatmentSuggestion: '治疗建议修改：\n1. 加强血糖监测频率，建议每日监测4次\n2. 调整降糖药物方案，考虑加用二甲双胍\n3. 严格控制饮食，减少碳水化合物摄入\n4. 建议参加戒烟门诊，获取专业戒烟指导\n5. 每月复诊一次，评估治疗效果',
-  //   imgList: [
-  //     'https://yiliao.admin.php7788.com/profile/record/2026/03/20/123_20260320210522A008.png',
-  //     'https://yiliao.admin.php7788.com/profile/record/2026/03/20/avator_20260320210903A009.png',
-  //     'https://yiliao.admin.php7788.com/profile/record/2026/03/20/img_20260320210908A010.jpeg'
-  //   ]
-  // }
+  {
+    recordId: 15,
+    createTime: '2026-03-20 21:40:02',
+    totalScore: 5,
+    riskLevel: '高危',
+    sugarScore: 0,
+    pressureScore: 0,
+    ldlScore: 2,
+    bmiScore: 2,
+    smokingScore: 1,
+    department: '心内科',
+    doctorName: '王医生',
+    diagnosisResult: '患者血糖控制不佳，血压正常，血脂偏高，BMI超标，吸烟量较大。综合评估为高危人群，需要立即采取干预措施。',
+    treatmentSuggestion: '1. 建议立即戒烟，减少心血管风险因素\n2. 控制血糖，定期监测空腹及餐后血糖\n3. 调整饮食结构，减少高脂高糖食物摄入\n4. 增加有氧运动，每周至少150分钟中等强度运动\n5. 定期复查血脂，必要时启动降脂治疗',
+    imgList: [
+      'https://yiliao.admin.php7788.com/profile/record/2026/03/20/2b812402-df53-4470-abd3-18428b548abc_20260320213959A013.png',
+      'https://yiliao.admin.php7788.com/profile/record/2026/03/20/04c1408b-0545-4299-adc0-ddc2564eb2aa_20260320214746A014.png'
+    ]
+  },
+  {
+    recordId: 13,
+    createTime: '2026-03-20 17:18:06',
+    totalScore: 7,
+    riskLevel: '高危',
+    sugarScore: 2,
+    pressureScore: 0,
+    ldlScore: 2,
+    bmiScore: 2,
+    smokingScore: 1,
+    department: '内分泌科',
+    doctorName: '李医生',
+    diagnosisResult: '诊断结果修改：患者近期血糖波动较大，血压控制良好，血脂水平持续偏高，体重超标情况未改善，吸烟习惯仍未戒除。',
+    treatmentSuggestion: '治疗建议修改：\n1. 加强血糖监测频率，建议每日监测4次\n2. 调整降糖药物方案，考虑加用二甲双胍\n3. 严格控制饮食，减少碳水化合物摄入\n4. 建议参加戒烟门诊，获取专业戒烟指导\n5. 每月复诊一次，评估治疗效果',
+    imgList: [
+      'https://yiliao.admin.php7788.com/profile/record/2026/03/20/123_20260320210522A008.png',
+      'https://yiliao.admin.php7788.com/profile/record/2026/03/20/avator_20260320210903A009.png',
+      'https://yiliao.admin.php7788.com/profile/record/2026/03/20/img_20260320210908A010.jpeg'
+    ]
+  }
 ]);
 
 // 页面加载
@@ -875,6 +903,33 @@ const getScoreClass = (score) => {
   padding: 6px 12px;
   border-radius: 6px;
   border: 1px solid #e8e8e8;
+}
+
+/* 医生信息 */
+.doctor-section {
+  background-color: #f8f6ff;
+}
+
+.doctor-content {
+  display: flex;
+  gap: 20px;
+}
+
+.doctor-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.doctor-label {
+  font-size: 13px;
+  color: #999;
+}
+
+.doctor-value {
+  font-size: 14px;
+  color: #333;
+  font-weight: 500;
 }
 
 /* 诊断结果 */
