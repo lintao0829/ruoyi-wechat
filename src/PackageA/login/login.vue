@@ -21,13 +21,13 @@
         >
           <text class="tab-text">密码登录</text>
         </view>
-        <!-- <view 
+        <view 
           class="tab-item" 
-          :class="{ active: loginType === 'code' }"
-          @click="loginType = 'code'"
+          :class="{ active: loginType === 'phone' }"
+          @click="loginType = 'phone'"
         >
-          <text class="tab-text"></text>
-        </view> -->
+          <text class="tab-text">手机号登录</text>
+        </view>
       </view>
 
       <!-- 密码登录表单 -->
@@ -78,52 +78,34 @@
         </view>
       </view>
 
-      <!-- 验证码登录表单 -->
-      <view v-else class="form-content">
-        <view class="input-group">
-          <view class="input-item">
-            <uni-icons type="person" size="20" color="#999"></uni-icons>
-            <input 
-              type="text" 
-              v-model="form.phone" 
-              placeholder="请输入账号" 
-              class="input-field"
-              maxlength="11"
-            />
+      <!-- 手机号一键登录表单 -->
+      <view v-else-if="loginType === 'phone'" class="form-content">
+        <!-- 手机号快速验证组件 -->
+        <view class="phone-verify-section">
+          <view class="phone-login-info">
+            <!-- <view class="phone-icon-wrapper">
+              <uni-icons type="phone-filled" size="40" color="#fff"></uni-icons>
+            </view> -->
+            <text class="phone-login-title">手机号快捷登录</text>
+            <text class="phone-login-desc">使用微信绑定手机号一键登录</text>
           </view>
-          <view class="input-item">
-            <uni-icons type="locked" size="20" color="#999"></uni-icons>
-            <input 
-              type="text" 
-              v-model="form.code" 
-              placeholder="请输入验证码" 
-              class="input-field"
-              maxlength="6"
-            />
-            <view 
-              class="code-btn" 
-              :class="{ disabled: countdown > 0 }"
-              @click="sendCode"
-            >
-              <text class="code-text">{{ countdown > 0 ? `${countdown}s` : '获取验证码' }}</text>
-            </view>
+          <button
+            class="verify-btn"
+            open-type="getPhoneNumber"
+            @getphonenumber="onGetPhoneNumber"
+          >
+            <uni-icons type="weixin" size="20" color="#fff"></uni-icons>
+            <text class="verify-text">微信一键登录</text>
+          </button>
+          <view class="phone-login-tips">
+            <uni-icons type="info-filled" size="12" color="#999"></uni-icons>
+            <text class="verify-tip">点击按钮自动获取微信绑定手机号</text>
           </view>
-        </view>
-
-        <!-- 记住密码和验证码 -->
-        <view class="form-footer">
-          <view class="remember-wrapper" @click="rememberMe = !rememberMe">
-            <view class="toggle-switch" :class="{ active: rememberMe }">
-              <view class="toggle-dot"></view>
-            </view>
-            <text class="toggle-text" :class="{ active: rememberMe }">记住密码</text>
-          </view>
-          <text class="forgot-text" v-if="captchaEnabled" @click="getCode">换一张</text>
         </view>
       </view>
 
-      <!-- 登录按钮 -->
-      <button class="login-btn" @click="handleLogin">登 录</button>
+      <!-- 登录按钮 - 仅在密码登录时显示 -->
+      <button v-if="loginType === 'password'" class="login-btn" @click="handleLogin">登 录</button>
 
       <!-- 其他选项 -->
       <view class="other-options">
@@ -394,6 +376,117 @@ const handleLogin = () => {
       console.error('登录请求失败:', err);
     }
   });
+};
+
+// 手机号快速验证回调
+const onGetPhoneNumber = (e) => {
+  console.log('手机号验证回调:', e);
+
+  if (e.detail.errMsg === 'getPhoneNumber:ok') {
+    // 获取手机号成功
+    const encryptedData = e.detail.encryptedData;
+    const iv = e.detail.iv;
+    const code = e.detail.code; // 动态令牌，用于换取手机号
+    console.log('encryptedData:', encryptedData);
+    console.log('iv:', iv);
+    console.log('code:', code);
+    console.log('-----------------------手机号验证回调');
+
+    uni.showLoading({
+      title: '验证中...',
+      mask: true
+    });
+
+    // 调用后端接口验证手机号并登录
+    // 注意：后端需要实现此接口，用于将微信code换取手机号并完成登录
+    uni.request({
+      url: 'https://yiliao.admin.php7788.com/prod-api/login/wxPhone',
+      method: 'POST',
+      header: {
+        'Content-Type': 'application/json'
+      },
+      data: {
+        code: code, // 微信返回的动态令牌
+        encryptedData: encryptedData,
+        iv: iv
+      },
+      success: (res) => {
+        uni.hideLoading();
+
+        if (res.statusCode === 200) {
+          const data = res.data;
+          if (data.code === 200 || data.code === 0) {
+            // 登录成功
+            if (data.token) {
+              uni.setStorageSync('token', data.token);
+            }
+            uni.showToast({ title: '登录成功', icon: 'success' });
+            setTimeout(() => {
+              uni.switchTab({
+                url: '/pages/index/index'
+              });
+            }, 1000);
+          } else {
+            uni.showToast({
+              title: data.msg || '登录失败',
+              icon: 'none',
+              duration: 2000
+            });
+          }
+        } else if (res.statusCode === 401) {
+          uni.showToast({
+            title: '手机号未注册，请先注册',
+            icon: 'none',
+            duration: 2000
+          });
+          // 可以跳转到注册页面
+          setTimeout(() => {
+            uni.navigateTo({
+              url: '/pages/register/register'
+            });
+          }, 1500);
+        } else {
+          uni.showToast({
+            title: '登录失败：' + (res.data?.msg || '请稍后重试'),
+            icon: 'none',
+            duration: 2000
+          });
+        }
+      },
+      fail: (err) => {
+        uni.hideLoading();
+        uni.showToast({
+          title: '网络错误，请检查网络',
+          icon: 'none'
+        });
+        console.error('手机号登录失败:', err);
+      }
+    });
+  } else if (e.detail.errMsg === 'getPhoneNumber:fail user deny') {
+    // 用户拒绝授权
+    uni.showToast({
+      title: '您拒绝了授权，可使用密码登录',
+      icon: 'none',
+      duration: 2000
+    });
+  } else if (e.detail.errMsg && e.detail.errMsg.includes('errorCode:-10000')) {
+    // 系统错误，通常是未开通能力或未绑定手机号
+    uni.showModal({
+      title: '提示',
+      content: '手机号快速验证功能暂不可用，请使用密码登录',
+      showCancel: false,
+      confirmText: '我知道了'
+    });
+    console.error('手机号验证系统错误:', e.detail);
+  } else {
+    // 其他错误
+    uni.showToast({
+      title: '获取手机号失败，请使用密码登录',
+      icon: 'none',
+      duration: 2000
+    });
+    console.error('手机号验证失败:', e.detail);
+  }
 };
 
 // 跳转到注册页
@@ -811,5 +904,90 @@ const showPrivacy = () => {
 .icon-label {
   font-size: 13px;
   color: #666;
+}
+
+/* 手机号验证区域 */
+.phone-verify-section {
+  margin-top: 10px;
+  padding: 40px 25px;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e6f7ff 100%);
+  border-radius: 16px;
+  text-align: center;
+  border: 1px solid #e6f7ff;
+}
+
+.phone-login-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 35px;
+}
+
+.phone-icon-wrapper {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #07c160, #10b981);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  box-shadow: 0 8px 20px rgba(7, 193, 96, 0.3);
+}
+
+.phone-login-title {
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.phone-login-desc {
+  font-size: 14px;
+  color: #666;
+}
+
+.verify-btn {
+  width: 100%;
+  height: 50px;
+  line-height: 50px;
+  background: linear-gradient(135deg, #07c160, #10b981);
+  border-radius: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border: none;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 15px rgba(7, 193, 96, 0.3);
+  transition: all 0.3s ease;
+}
+
+.verify-btn:active {
+  transform: scale(0.98);
+  box-shadow: 0 2px 8px rgba(7, 193, 96, 0.2);
+}
+
+.verify-btn[disabled] {
+  background: #ccc;
+  opacity: 0.6;
+}
+
+.verify-text {
+  font-size: 17px;
+  color: #fff;
+  font-weight: 600;
+}
+
+.phone-login-tips {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.verify-tip {
+  font-size: 13px;
+  color: #999;
 }
 </style>
