@@ -83,10 +83,13 @@
             mode="selector"
             :range="doctorNames"
             :value="doctorIndex"
+            :disabled="doctorDisabled"
             @change="onDoctorChange"
+            v-if="doctorDisabled"
           >
             <view class="picker-value">{{ doctorText }}</view>
           </picker>
+          <view v-else>{{ doctorText }}</view>
         </view>
         <view class="form-item">
           <text class="form-label">地址</text>
@@ -197,6 +200,7 @@ const onDateChange = (e) => {
 };
 
 const doctorNames = computed(() => doctorList.value.map((d) => d.userName));
+const doctorDisabled = ref(false);
 const doctorIndex = computed(() => {
   const idx = doctorList.value.findIndex(
     (d) => d.userId === form.value.doctorId,
@@ -209,6 +213,7 @@ const doctorText = computed(() => {
 });
 
 const onDoctorChange = (e) => {
+  if (doctorDisabled.value) return;
   const doctor = doctorList.value[e.detail.value];
   if (doctor) {
     form.value.doctorId = doctor.userId;
@@ -235,22 +240,20 @@ const getDoctorList = () => {
 const getPatientInfo = () => {
   const userInfo = uni.getStorageSync("userInfo");
   let userId = "";
+  let patientId = "";
   if (userInfo?.userType == 0) {
     userId = userInfo?.userId;
-    uni.showToast(0)
   } else if (userInfo?.userType == 1) {
-    userId = userInfo?.patientId;
-    uni.showToast(1)
+    patientId = userInfo?.patientId;
   }
-  console.log(userId,userInfo, "userId====查询患者信息");
-  if (!userId) {
+  if (!userId && !patientId) {
     uni.showToast({ title: "用户ID不能为空", icon: "none" });
     return;
   };
   uni.request({
-    url: `${baseUrl}/system/patient/list`,
+    url: `${baseUrl}/system/user/list`,
     method: "GET",
-    data: { userId, pageNum: 1, pageSize: 1 },
+    data: { pageNum: 1, pageSize: 1, ...(userInfo?.userType == 0 ? { userId } : { patientId }) },
     header: { Authorization: uni.getStorageSync("token") || "" },
     success: (res) => {
       if (res.data && res.data.code === 200) {
@@ -272,6 +275,8 @@ const getPatientInfo = () => {
             address: data.address || "",
           };
           initDateIndex(form.value.visitTime);
+          // 如果有 userId（医生账号），则不允许修改主治医师
+          doctorDisabled.value = !!userId;
         }
       }
     },
@@ -306,10 +311,10 @@ const saveForm = () => {
     data: payload,
     success: (res) => {
       uni.hideLoading();
-      if (res.data && res.data.code === 200) {
+      if (res.data && res.data.code == 200) {
         uni.showToast({ title: "保存成功", icon: "success" });
         setTimeout(() => {
-          uni.redirectTo({ url: "/pages/profile/profile" });
+          uni.switchTab({ url: "/pages/profile/profile" });
         }, 1500);
       } else {
         uni.showToast({ title: res.data?.msg || "保存失败", icon: "none" });
@@ -396,6 +401,10 @@ onShow(async () => {
 .picker-value {
   font-size: 15px;
   color: #333;
+}
+
+.picker-value.disabled {
+  color: #999;
 }
 
 .form-textarea {
