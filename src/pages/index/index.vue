@@ -1,7 +1,7 @@
 <template>
   <view class="container">
     <!-- 医生端视图 -->
-    <DoctorHome v-if="userType === 0" :userInfo="userInfo" />
+    <DoctorHome ref="doctorHomeRef" v-if="userType === 0" :userInfo="userInfo" />
 
     <!-- 用户端视图 -->
     <template v-else>
@@ -153,6 +153,9 @@ const riskLevelText = ref('请先登录查看健康码');
 const medicalRecords = ref([
 ]);
 
+// DoctorHome 组件引用
+const doctorHomeRef = ref(null);
+
 // 页面加载
 // onMounted(() => {
 //   getUserInfo();
@@ -161,6 +164,9 @@ const medicalRecords = ref([
 // 页面显示
 onShow(() => {
   getUserInfo();
+  if (userType.value === 0) {
+    doctorHomeRef.value?.getRecentPatients?.();
+  }
 });
 // 获取就诊记录
 const getRecordList = (patientId) => {
@@ -306,7 +312,7 @@ const getScoreRecord = (patientId) => {
               riskLevelText.value = '很高危：8-10 分';
             }
           } else {
-            riskLevelImage.value = '/static/img/1.jpeg';
+            riskLevelImage.value = '/static/img/fNL9ufsp0.jpeg';
             riskLevelText.value = '暂无评分记录';
           }
         }

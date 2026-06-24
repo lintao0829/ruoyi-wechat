@@ -72,7 +72,7 @@
       </view>
 
       <!-- 切换到医生端 -->
-      <view class="switch-section" @click="switchToDoctor">
+      <!-- <view class="switch-section" @click="switchToDoctor">
         <view class="switch-item">
           <view class="switch-left">
             <view class="icon-box small blue">
@@ -81,7 +81,7 @@
             <text class="switch-text">切换到医生端</text>
           </view>
         </view>
-      </view>
+      </view> -->
 
       <!-- 退出登录 -->
       <view class="logout-section">
@@ -200,7 +200,7 @@ const goToRecord = () => {
 const goToDoctor = () => {
   const doctorIdList = userInfo.value.doctorId || [];
   uni.navigateTo({
-    url: '/pages/doctor-detail/doctor-detail?doctorIdList=' + encodeURIComponent(JSON.stringify(doctorIdList))
+    url: '/packageB/doctor-detail/doctor-detail?doctorIdList=' + encodeURIComponent(JSON.stringify(doctorIdList))
   });
 };
 
@@ -247,7 +247,7 @@ const goToSettings = () => {
     return;
   }
   uni.navigateTo({
-    url: '/pages/settings/settings'
+    url: '/packageB/settings/settings'
   });
 };
 

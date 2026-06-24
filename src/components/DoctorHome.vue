@@ -74,6 +74,7 @@
     <view class="recent-section">
       <view class="section-header">
         <text class="section-title">最近添加</text>
+        <text class="section-title2" @click="goToAddPatient">添加患者</text>
         <!-- <text class="more-link" @click="goToPatientList">查看更多 →</text> -->
       </view>
       <view class="patient-list">
@@ -98,8 +99,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
-import {onShow} from '@dcloudio/uni-app'
+import { ref, computed, onMounted } from 'vue';
 const props = defineProps({
   userInfo: {
     type: Object,
@@ -129,9 +129,8 @@ const todayStats = ref({
 // 最近患者
 const recentPatients = ref([]);
 
-// 页面加载
-onShow(() => {
-  // getTodayStats();
+// 组件挂载时获取数据
+onMounted(() => {
   getRecentPatients();
 });
 
@@ -172,7 +171,8 @@ const getRecentPatients = () => {
     data: {
       pageNum: 1,
       pageSize: 5, // 只获取最近5个患者
-      doctorId: doctorId
+      // doctorId: doctorId,
+      userId: doctorId
     },
     success: (res) => {
       if (res.statusCode === 200) {
@@ -241,38 +241,42 @@ const formatTime = (timeStr) => {
 // 跳转到扫码页面
 const goToScan = () => {
   uni.navigateTo({
-    url: '/pages/doctor-scan/doctor-scan'
+    url: '/packageB/doctor-scan/doctor-scan'
   });
 };
 
 // 跳转到患者列表
 const goToPatientList = () => {
   uni.navigateTo({
-    url: '/pages/patient-list/patient-list'
+    url: '/packageB/patient-list/patient-list'
   });
 };
 
 // 跳转到新增患者
 const goToAddPatient = () => {
   uni.navigateTo({
-    url: '/pages/patient-edit/patient-edit'
+    url: '/packageB/patient-add/patient-add'
   });
 };
 
 // 跳转到个人信息
 const goToProfile = () => {
   uni.navigateTo({
-    url: '/pages/doctor-profile/doctor-profile'
+    url: '/packageB/doctor-profile/doctor-profile'
   });
 };
 
 // 跳转到患者详情
 const goToPatientDetail = (patient) => {
   uni.navigateTo({
-    url: '/pages/patient-detail/patient-detail?id=' + patient.id
+    url: '/packageB/patient-detail/patient-detail?id=' + patient.id
     // /prod-api/system/patient/12
   });
 };
+
+defineExpose({
+  getRecentPatients
+});
 </script>
 
 <style scoped>
@@ -429,6 +433,13 @@ const goToPatientDetail = (patient) => {
   font-size: 18px;
   font-weight: 600;
   color: #333;
+  margin-bottom: 20px;
+  display: block;
+}
+.section-title2 {
+   font-size: 14px;
+  font-weight: 400;
+  color: #667eea;
   margin-bottom: 20px;
   display: block;
 }

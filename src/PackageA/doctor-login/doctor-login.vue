@@ -2,7 +2,7 @@
   <view class="container">
     <!-- 顶部图片 -->
     <view class="header">
-      <image src="/static/img/topPic.png" mode="widthFix" class="header-img"></image>
+      <image src="@/packageA/static/img/topPic.png" mode="widthFix" class="header-img"></image>
     </view>
 
     <!-- 登录表单 -->

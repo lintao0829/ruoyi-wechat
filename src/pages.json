@@ -23,70 +23,6 @@
 			"style": {
 				"navigationBarTitleText": ""
 			}
-		},
-		{
-			"path": "pages/doctor-detail/doctor-detail",
-			"style": {
-				"navigationBarTitleText": "医生详情",
-				"navigationBarTextStyle": "black",
-				"navigationBarBackgroundColor": "#fff"
-			}
-		},
-		{
-			"path": "pages/register/register",
-			"style": {
-				"navigationBarTitleText": "注册账号",
-				"navigationBarTextStyle": "black",
-				"navigationBarBackgroundColor": "#fff"
-			}
-		},
-		{
-			"path": "pages/settings/settings",
-			"style": {
-				"navigationBarTitleText": "设置中心",
-				"navigationBarTextStyle": "white",
-				"navigationBarBackgroundColor": "#1890ff"
-			}
-		},
-		{
-			"path": "pages/doctor-home/doctor-home",
-			"style": {
-				"navigationBarTitleText": "医生工作台",
-				"navigationBarTextStyle": "white",
-				"navigationBarBackgroundColor": "#1890ff"
-			}
-		},
-		{
-			"path": "pages/doctor-scan/doctor-scan",
-			"style": {
-				"navigationBarTitleText": "扫码录入",
-				"navigationBarTextStyle": "black",
-				"navigationBarBackgroundColor": "#fff"
-			}
-		},
-		{
-			"path": "pages/patient-list/patient-list",
-			"style": {
-				"navigationBarTitleText": "患者列表",
-				"navigationBarTextStyle": "black",
-				"navigationBarBackgroundColor": "#fff"
-			}
-		},
-		{
-			"path": "pages/patient-detail/patient-detail",
-			"style": {
-				"navigationBarTitleText": "患者详情",
-				"navigationBarTextStyle": "black",
-				"navigationBarBackgroundColor": "#fff"
-			}
-		},
-		{
-			"path": "pages/doctor-profile/doctor-profile",
-			"style": {
-				"navigationBarTitleText": "个人信息",
-				"navigationBarTextStyle": "black",
-				"navigationBarBackgroundColor": "#fff"
-			}
 		}
 	],
 	"subPackages": [
@@ -107,6 +43,91 @@
 				},
 				{
 					"path": "doctor-login/doctor-login"
+				}
+			]
+		},
+		{
+			"root": "packageB",
+			"pages": [
+				{
+					"path": "doctor-detail/doctor-detail",
+					"style": {
+						"navigationBarTitleText": "医生详情",
+						"navigationBarTextStyle": "black",
+						"navigationBarBackgroundColor": "#fff"
+					}
+				},
+				{
+					"path": "register/register",
+					"style": {
+						"navigationBarTitleText": "注册账号",
+						"navigationBarTextStyle": "black",
+						"navigationBarBackgroundColor": "#fff"
+					}
+				},
+				{
+					"path": "settings/settings",
+					"style": {
+						"navigationBarTitleText": "设置中心",
+						"navigationBarTextStyle": "white",
+						"navigationBarBackgroundColor": "#1890ff"
+					}
+				},
+				{
+					"path": "doctor-home/doctor-home",
+					"style": {
+						"navigationBarTitleText": "医生工作台",
+						"navigationBarTextStyle": "white",
+						"navigationBarBackgroundColor": "#1890ff"
+					}
+				},
+				{
+					"path": "doctor-scan/doctor-scan",
+					"style": {
+						"navigationBarTitleText": "扫码录入",
+						"navigationBarTextStyle": "black",
+						"navigationBarBackgroundColor": "#fff"
+					}
+				},
+				{
+					"path": "patient-list/patient-list",
+					"style": {
+						"navigationBarTitleText": "患者列表",
+						"navigationBarTextStyle": "black",
+						"navigationBarBackgroundColor": "#fff"
+					}
+				},
+				{
+					"path": "patient-detail/patient-detail",
+					"style": {
+						"navigationBarTitleText": "患者详情",
+						"navigationBarTextStyle": "black",
+						"navigationBarBackgroundColor": "#fff"
+					}
+				},
+				{
+					"path": "record-edit/record-edit",
+					"style": {
+						"navigationBarTitleText": "就诊记录",
+						"navigationBarTextStyle": "black",
+						"navigationBarBackgroundColor": "#fff"
+					}
+				},
+				{
+					"path": "patient-add/patient-add",
+					"style": {
+						"navigationBarTitleText": "添加患者",
+						"navigationBarTextStyle": "black",
+						"navigationBarBackgroundColor": "#fff"
+					}
+				},
+				{
+					"path": "doctor-profile/doctor-profile",
+					"style": {
+						"navigationBarTitleText": "个人信息",
+						"navigationBarTextStyle": "black",
+						"navigationBarBackgroundColor": "#fff"
+					}
 				}
 			]
 		}

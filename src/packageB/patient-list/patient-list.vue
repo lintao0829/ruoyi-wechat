@@ -29,7 +29,7 @@ const getAvatar = (avatar) => {
 
 const goToDetail = (patient) => {
   uni.navigateTo({
-    url: '/pages/doctor/patient-detail/patient-detail?id=' + patient.id
+    url: '/packageB/patient-detail/patient-detail?id=' + patient.id
   });
 };
 </script>

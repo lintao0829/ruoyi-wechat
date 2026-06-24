@@ -197,21 +197,21 @@ const goToEdit = () => {
 // 跳转到患者列表
 const goToPatientList = () => {
   uni.navigateTo({
-    url: '/pages/patient-list/patient-list'
+    url: '/packageB/patient-list/patient-list'
   });
 };
 
 // 跳转到扫码
 const goToScan = () => {
   uni.navigateTo({
-    url: '/pages/doctor-scan/doctor-scan'
+    url: '/packageB/doctor-scan/doctor-scan'
   });
 };
 
 // 跳转到设置
 const goToSettings = () => {
   uni.navigateTo({
-    url: '/pages/settings/settings'
+    url: '/packageB/settings/settings'
   });
 };
 

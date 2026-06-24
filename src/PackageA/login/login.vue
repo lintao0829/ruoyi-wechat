@@ -442,7 +442,7 @@ const onGetPhoneNumber = (e) => {
           // 可以跳转到注册页面
           setTimeout(() => {
             uni.navigateTo({
-              url: '/pages/register/register'
+              url: '/packageB/register/register'
             });
           }, 1500);
         } else {
@@ -492,7 +492,7 @@ const onGetPhoneNumber = (e) => {
 // 跳转到注册页
 const goToRegister = () => {
   uni.navigateTo({
-    url: '/pages/register/register'
+    url: '/packageB/register/register'
   });
 };
 

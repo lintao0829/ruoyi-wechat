@@ -204,35 +204,35 @@ const getRecentPatients = () => {
 // 跳转到扫码页面
 const goToScan = () => {
   uni.navigateTo({
-    url: '/pages/doctor-scan/doctor-scan'
+    url: '/packageB/doctor-scan/doctor-scan'
   });
 };
 
 // 跳转到患者列表
 const goToPatientList = () => {
   uni.navigateTo({
-    url: '/pages/patient-list/patient-list'
+    url: '/packageB/patient-list/patient-list'
   });
 };
 
 // 跳转到新增患者
 const goToAddPatient = () => {
   uni.navigateTo({
-    url: '/pages/patient-edit/patient-edit'
+    url: '/packageB/patient-edit/patient-edit'
   });
 };
 
 // 跳转到个人信息
 const goToProfile = () => {
   uni.navigateTo({
-    url: '/pages/doctor-profile/doctor-profile'
+    url: '/packageB/doctor-profile/doctor-profile'
   });
 };
 
 // 跳转到患者详情
 const goToPatientDetail = (patient) => {
   uni.navigateTo({
-    url: '/pages/patient-detail/patient-detail?id=' + patient.id
+    url: '/packageB/patient-detail/patient-detail?id=' + patient.id
   });
 };
 

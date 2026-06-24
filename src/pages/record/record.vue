@@ -133,13 +133,9 @@ const riskLevelText = computed(() => {
 const fetchHistoryRecords = (patientId) => {
   console.log('patientId===获取评分记录', patientId)
   if (!patientId) {
-    // 清空历史记录缓存
+    // 没有 patientId，清空历史记录（不显示错误提示，因为在 getPatientId 中已经处理）
     historyRecords.value = [];
     currentRecord.value = {};
-    uni.showToast({
-      title: '请先登录，才能开始评分',
-      icon: 'none'
-    });
     return;
   }
 
@@ -169,13 +165,13 @@ const fetchHistoryRecords = (patientId) => {
 
 // 获取患者 ID
 const getPatientId = () => {
+  const token = uni.getStorageSync('token');
   const userInfo = uni.getStorageSync('userInfo');
-  const data = userInfo?.data || userInfo;
-  // 从 userInfo 中获取 patientId
-  console.log(data, 'data===================')
-  patientId.value = data?.patientId || null;
-  fetchHistoryRecords(patientId.value);
-  if (!patientId.value) {
+  
+  console.log('userInfo:', userInfo);
+  
+  // 先检查是否登录
+  if (!token || !userInfo) {
     // 未登录---清空历史记录
     historyRecords.value = [{
       id: 0,
@@ -188,7 +184,34 @@ const getPatientId = () => {
       bmiScore: 0,
       smokingScore: 0,
     }];
+    currentRecord.value = {};
+    return;
   }
+  
+  // 从 userInfo 中直接获取 patientId（userInfo 本身就是数据对象，不需要访问 .data）
+  patientId.value = userInfo?.patientId || null;
+  console.log('patientId:', patientId.value);
+  
+  // 如果是医生账号（userType === 0），可能没有 patientId
+  if (userInfo.userType === 0 && !patientId.value) {
+    // 医生账号，暂时显示空记录
+    historyRecords.value = [{
+      id: 0,
+      totalScore: 0,
+      riskLevel: '',
+      createTime: '',
+      sugarScore: 0,
+      pressureScore: 0,
+      ldlScore: 0,
+      bmiScore: 0,
+      smokingScore: 0,
+    }];
+    currentRecord.value = {};
+    return;
+  }
+  
+  // 患者账号，获取历史记录
+  fetchHistoryRecords(patientId.value);
 };
 
 onShow(() => {
