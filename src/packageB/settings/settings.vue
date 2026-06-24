@@ -83,7 +83,6 @@
             mode="selector"
             :range="doctorNames"
             :value="doctorIndex"
-            :disabled="doctorDisabled"
             @change="onDoctorChange"
             v-if="doctorDisabled"
           >
@@ -275,8 +274,10 @@ const getPatientInfo = () => {
             address: data.address || "",
           };
           initDateIndex(form.value.visitTime);
-          // 如果有 userId（医生账号），则不允许修改主治医师
-          doctorDisabled.value = !!userId;
+          // 只有超级管理员允许修改主治医师
+          const nickName = userInfo?.nickName || '';
+          doctorDisabled.value = nickName !== '超级管理员';
+
         }
       }
     },

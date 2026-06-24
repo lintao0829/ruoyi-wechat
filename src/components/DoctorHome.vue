@@ -276,6 +276,7 @@ const goToProfile = () => {
 
 // 跳转到患者详情
 const goToPatientDetail = (patient) => {
+  console.log(patient, "patient12333");
   uni.navigateTo({
     url: '/packageB/patient-detail/patient-detail?id=' + patient.id
     // /prod-api/system/patient/12

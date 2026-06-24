@@ -300,6 +300,7 @@ const getPatientDetail = () => {
 };
 
 const getRecordList = () => {
+  console.log(patientId.value, "patientId.value1111");
   if (!patientId.value) return;
   uni.request({
     url: `${baseUrl}/system/score/record/list`,
