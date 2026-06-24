@@ -1,249 +1,321 @@
 <template>
   <view class="container">
-    <!-- 头像设置 -->
-    <view class="section">
-      <text class="section-title">头像设置</text>
-      <view class="avatar-setting" @click="chooseAvatar">
-        <image :src="avatarUrl" class="avatar-img" mode="aspectFill"></image>
-        <text class="avatar-tip">点击更换头像</text>
-      </view>
-    </view>
-
     <!-- 基本信息 -->
     <view class="section">
       <text class="section-title">基本信息</text>
       <view class="form-list">
         <view class="form-item">
-          <text class="form-label">昵称</text>
-          <input 
-            type="text" 
-            v-model="userForm.nickName" 
-            placeholder="请输入昵称" 
+          <text class="form-label required">患者姓名</text>
+          <input
+            type="text"
+            v-model="form.patientName"
+            placeholder="请输入患者姓名"
             class="form-input"
           />
         </view>
         <view class="form-item">
-          <text class="form-label">手机号</text>
-          <input 
-            type="text" 
-            v-model="userForm.phonenumber" 
-            placeholder="请输入手机号" 
+          <text class="form-label required">性别</text>
+          <picker
+            class="form-picker"
+            mode="selector"
+            :range="genderOptions"
+            :value="genderIndex"
+            @change="onGenderChange"
+          >
+            <view class="picker-value">{{ genderText }}</view>
+          </picker>
+        </view>
+        <view class="form-item">
+          <text class="form-label">年龄</text>
+          <input
+            type="number"
+            v-model="form.age"
+            placeholder="请输入年龄"
+            class="form-input"
+          />
+        </view>
+        <view class="form-item">
+          <text class="form-label required">联系电话</text>
+          <input
+            type="number"
+            v-model="form.phone"
+            placeholder="请输入联系电话"
             class="form-input"
             maxlength="11"
           />
         </view>
         <view class="form-item">
-          <text class="form-label">邮箱</text>
-          <input 
-            type="text" 
-            v-model="userForm.email" 
-            placeholder="请输入邮箱" 
+          <text class="form-label">身高(cm)</text>
+          <input
+            type="digit"
+            v-model="form.height"
+            placeholder="请输入身高"
             class="form-input"
           />
         </view>
         <view class="form-item">
-          <text class="form-label">性别</text>
-          <view class="gender-options">
-            <view 
-              class="gender-option" 
-              :class="{ active: userForm.sex === '0' }"
-              @click="userForm.sex = '0'"
-            >
-              <text class="gender-text">男</text>
-            </view>
-            <view 
-              class="gender-option" 
-              :class="{ active: userForm.sex === '1' }"
-              @click="userForm.sex = '1'"
-            >
-              <text class="gender-text">女</text>
-            </view>
-          </view>
+          <text class="form-label">体重(kg)</text>
+          <input
+            type="digit"
+            v-model="form.weight"
+            placeholder="请输入体重"
+            class="form-input"
+          />
+        </view>
+        <view class="form-item">
+          <text class="form-label">就诊时间</text>
+          <picker
+            class="form-picker"
+            mode="multiSelector"
+            :range="dateRange"
+            :value="dateIndex"
+            @change="onDateChange"
+          >
+            <view class="picker-value">{{
+              form.visitTime || "请选择就诊时间"
+            }}</view>
+          </picker>
+        </view>
+        <view class="form-item">
+          <text class="form-label">主治医师</text>
+          <picker
+            class="form-picker"
+            mode="selector"
+            :range="doctorNames"
+            :value="doctorIndex"
+            @change="onDoctorChange"
+          >
+            <view class="picker-value">{{ doctorText }}</view>
+          </picker>
+        </view>
+        <view class="form-item">
+          <text class="form-label">地址</text>
+          <textarea
+            class="form-textarea"
+            v-model="form.address"
+            placeholder="请输入地址"
+          />
         </view>
       </view>
-      <button class="save-btn" @click="saveUserInfo">保存基本信息</button>
+      <button class="save-btn" @click="saveForm">保存基本信息</button>
     </view>
   </view>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
-import { onShow } from '@dcloudio/uni-app';
+import { ref, computed, onMounted } from "vue";
+import { onShow } from "@dcloudio/uni-app";
 
-// 用户信息
-const userInfo = ref({});
+const baseUrl = "https://yiliao.admin.php7788.com/prod-api";
 
-// 计算头像URL
-const avatarUrl = computed(() => {
-  if (!userInfo.value.avatar) {
-    return '/static/logo.png';
+const doctorList = ref([]);
+
+const form = ref({
+  patientId: undefined,
+  patientName: "",
+  gender: "",
+  age: "",
+  phone: "",
+  height: "",
+  weight: "",
+  visitTime: "",
+  doctorId: undefined,
+  doctorName: "",
+  address: "",
+});
+
+const genderOptions = ["请选择性别", "男", "女"];
+const genderValues = ["", "0", "1"];
+const genderIndex = computed(() => {
+  const idx = genderValues.indexOf(form.value.gender);
+  return idx >= 0 ? idx : 0;
+});
+const genderText = computed(() => genderOptions[genderIndex.value]);
+
+const onGenderChange = (e) => {
+  form.value.gender = genderValues[e.detail.value];
+};
+
+const years = Array.from({ length: 51 }, (_, i) => 2026 - i + "年");
+const months = Array.from(
+  { length: 12 },
+  (_, i) => (i + 1).toString().padStart(2, "0") + "月",
+);
+const days = Array.from(
+  { length: 31 },
+  (_, i) => (i + 1).toString().padStart(2, "0") + "日",
+);
+const hours = Array.from(
+  { length: 24 },
+  (_, i) => i.toString().padStart(2, "0") + "时",
+);
+const minutes = Array.from(
+  { length: 60 },
+  (_, i) => i.toString().padStart(2, "0") + "分",
+);
+const seconds = Array.from(
+  { length: 60 },
+  (_, i) => i.toString().padStart(2, "0") + "秒",
+);
+const dateRange = [years, months, days, hours, minutes, seconds];
+const dateIndex = ref([0, 0, 0, 0, 0, 0]);
+
+const initDateIndex = (timeStr) => {
+  if (!timeStr) {
+    const now = new Date();
+    dateIndex.value = [
+      years.indexOf(now.getFullYear() + "年") || 0,
+      now.getMonth(),
+      now.getDate() - 1,
+      now.getHours(),
+      now.getMinutes(),
+      now.getSeconds(),
+    ];
+    return;
   }
-  if (userInfo.value.avatar.startsWith('http')) {
-    return userInfo.value.avatar;
+  const d = new Date(timeStr.replace(/-/g, "/"));
+  if (isNaN(d.getTime())) return;
+  dateIndex.value = [
+    years.indexOf(d.getFullYear() + "年") || 0,
+    d.getMonth(),
+    d.getDate() - 1,
+    d.getHours(),
+    d.getMinutes(),
+    d.getSeconds(),
+  ];
+};
+
+const onDateChange = (e) => {
+  const val = e.detail.value;
+  const y = years[val[0]].replace("年", "");
+  const m = months[val[1]].replace("月", "");
+  const d = days[val[2]].replace("日", "");
+  const h = hours[val[3]].replace("时", "");
+  const mi = minutes[val[4]].replace("分", "");
+  const s = seconds[val[5]].replace("秒", "");
+  form.value.visitTime = `${y}-${m}-${d} ${h}:${mi}:${s}`;
+};
+
+const doctorNames = computed(() => doctorList.value.map((d) => d.userName));
+const doctorIndex = computed(() => {
+  const idx = doctorList.value.findIndex(
+    (d) => d.userId === form.value.doctorId,
+  );
+  return idx >= 0 ? idx : 0;
+});
+const doctorText = computed(() => {
+  const doctor = doctorList.value.find(
+    (d) => d.userId === form.value.doctorId,
+  );
+  return doctor?.userName || "请选择主治医师";
+});
+
+const onDoctorChange = (e) => {
+  const doctor = doctorList.value[e.detail.value];
+  if (doctor) {
+    form.value.doctorId = doctor.userId;
+    form.value.doctorName = doctor.userName;
   }
-  const avatarPath = userInfo.value.avatar.replace(/\/+/g, '/');
-  return 'https://yiliao.admin.php7788.com/prod-api/' + avatarPath;
-});
+};
 
-// 用户表单
-const userForm = ref({
-  nickName: '',
-  phonenumber: '',
-  email: '',
-  sex: '0'
-});
-
-// 页面加载时获取用户信息
-onMounted(() => {
-  getUserInfo();
-});
-
-// 页面显示时获取用户信息
-onShow(() => {
-  getUserInfo();
-});
-
-// 获取用户信息
-const getUserInfo = () => {
+const getDoctorList = () => {
   uni.request({
-    url: 'https://yiliao.admin.php7788.com/prod-api/system/user/profile',
-    method: 'GET',
-    timeout: 10000,
-    header: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + uni.getStorageSync('token')
-    },
+    url: `${baseUrl}/system/user/querySysUserList`,
+    method: "GET",
+    header: { Authorization: uni.getStorageSync("token") || "" },
     success: (res) => {
-      if (res.statusCode === 200) {
-        const data = res.data;
-        if (data.code === 200 || data.code === 0) {
-          userInfo.value = data.data;
-          // 填充表单
-          userForm.value = {
-            nickName: data.data.nickName || '',
-            phonenumber: data.data.phonenumber || '',
-            email: data.data.email || '',
-            sex: data.data.sex || '0'
+      if (res.data && res.data.code === 200) {
+        doctorList.value = res.data.rows || res.data.data || [];
+      }
+    },
+    fail: () => {
+      doctorList.value = [];
+    },
+  });
+};
+
+const getPatientInfo = () => {
+  const userInfo = uni.getStorageSync("userInfo");
+  const userId = userInfo?.userId;
+  if (!userId) return;
+
+  uni.request({
+    url: `${baseUrl}/system/patient/list`,
+    method: "GET",
+    data: { userId, pageNum: 1, pageSize: 1 },
+    header: { Authorization: uni.getStorageSync("token") || "" },
+    success: (res) => {
+      if (res.data && res.data.code === 200) {
+        const rows = res.data.rows || [];
+        if (rows.length > 0) {
+          const data = rows[0];
+          form.value = {
+            patientId: data.patientId,
+            patientName: data.patientName || "",
+            gender: data.gender || "",
+            age: data.age || "",
+            phone: data.phone || "",
+            height: data.height || "",
+            weight: data.weight || "",
+            visitTime: data.visitTime || "",
+            doctorId: data.userId,
+            doctorName: data.doctorName || "",
+            address: data.address || "",
           };
+          initDateIndex(form.value.visitTime);
         }
       }
     },
-    fail: (err) => {
-      console.error('获取用户信息失败:', err);
-    }
   });
 };
 
-// 选择头像
-const chooseAvatar = () => {
-  uni.chooseImage({
-    count: 1,
-    sizeType: ['compressed'],
-    sourceType: ['album', 'camera'],
-    success: (res) => {
-      const tempFilePath = res.tempFilePaths[0];
-      uploadAvatar(tempFilePath);
-    }
-  });
-};
-
-// 上传头像
-const uploadAvatar = (filePath) => {
-  uni.showLoading({ title: '上传中...', mask: true });
-  
-  uni.uploadFile({
-    url: 'https://yiliao.admin.php7788.com/prod-api/system/user/profile/avatar',
-    filePath: filePath,
-    name: 'avatarfile',
-    header: {
-      'Authorization': 'Bearer ' + uni.getStorageSync('token')
-    },
-    success: (res) => {
-      uni.hideLoading();
-      if (res.statusCode === 200) {
-        const data = JSON.parse(res.data);
-        if (data.code === 200 || data.code === 0) {
-          uni.showToast({ title: '头像上传成功', icon: 'success' });
-          // 更新本地头像
-          userInfo.value.avatar = data.imgUrl;
-          // 更新缓存
-          const userCache = uni.getStorageSync('userInfo') || {};
-          userCache.avatar = data.imgUrl;
-          uni.setStorageSync('userInfo', userCache);
-        } else {
-          uni.showToast({ title: data.msg || '上传失败', icon: 'none' });
-        }
-      }
-    },
-    fail: (err) => {
-      uni.hideLoading();
-      uni.showToast({ title: '上传失败', icon: 'none' });
-      console.error('上传头像失败:', err);
-    }
-  });
-};
-
-// 保存用户信息
-const saveUserInfo = () => {
-  // 表单验证
-  if (!userForm.value.nickName) {
-    uni.showToast({ title: '请输入昵称', icon: 'none' });
+const saveForm = () => {
+  if (!form.value.patientName) {
+    uni.showToast({ title: "患者姓名不能为空", icon: "none" });
     return;
   }
-  if (!userForm.value.phonenumber) {
-    uni.showToast({ title: '请输入手机号', icon: 'none' });
-    return;
-  }
-  if (!/^1[3-9]\d{9}$/.test(userForm.value.phonenumber)) {
-    uni.showToast({ title: '手机号格式不正确', icon: 'none' });
-    return;
-  }
-  if (!userForm.value.email) {
-    uni.showToast({ title: '请输入邮箱', icon: 'none' });
-    return;
-  }
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(userForm.value.email)) {
-    uni.showToast({ title: '邮箱格式不正确', icon: 'none' });
+  if (!form.value.phone) {
+    uni.showToast({ title: "联系电话不能为空", icon: "none" });
     return;
   }
 
-  uni.showLoading({ title: '保存中...', mask: true });
+  uni.showLoading({ title: "保存中...", mask: true });
+
+  const payload = {
+    ...form.value,
+    // userId: form.value.doctorId,
+  };
 
   uni.request({
-    url: 'https://yiliao.admin.php7788.com/prod-api/system/user/profile',
-    method: 'PUT',
-    timeout: 10000,
+    url: `${baseUrl}/system/patient/updatePatientInformation`,
+    method: "POST",
     header: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + uni.getStorageSync('token')
+      "Content-Type": "application/json",
+      Authorization: uni.getStorageSync("token") || "",
     },
-    data: userForm.value,
+    data: payload,
     success: (res) => {
       uni.hideLoading();
-      if (res.statusCode === 200) {
-        const data = res.data;
-        if (data.code === 200 || data.code === 0) {
-          uni.showToast({ title: '保存成功', icon: 'success' });
-          // 更新缓存
-          const userCache = uni.getStorageSync('userInfo') || {};
-          userCache.nickName = userForm.value.nickName;
-          userCache.phonenumber = userForm.value.phonenumber;
-          userCache.email = userForm.value.email;
-          userCache.sex = userForm.value.sex;
-          uni.setStorageSync('userInfo', userCache);
-        } else {
-          uni.showToast({ title: data.msg || '保存失败', icon: 'none' });
-        }
+      if (res.data && res.data.code === 200) {
+        uni.showToast({ title: "保存成功", icon: "success" });
+        setTimeout(() => {
+          uni.redirectTo({ url: "/pages/profile/profile" });
+        }, 1500);
+      } else {
+        uni.showToast({ title: res.data?.msg || "保存失败", icon: "none" });
       }
     },
-    fail: (err) => {
+    fail: () => {
       uni.hideLoading();
-      uni.showToast({ title: '保存失败', icon: 'none' });
-      console.error('保存用户信息失败:', err);
-    }
+      uni.showToast({ title: "保存失败", icon: "none" });
+    },
   });
 };
 
+onShow(() => {
+  getDoctorList();
+  getPatientInfo();
+});
 </script>
 
 <style scoped>
@@ -253,26 +325,13 @@ const saveUserInfo = () => {
   padding-bottom: 40px;
 }
 
-/* 头部 */
-.header {
-  background: linear-gradient(135deg, #1890ff 0%, #36cfc9 100%);
-  padding: 40px 20px 30px;
-  text-align: center;
-}
-
-.header-title {
-  font-size: 18px;
-  font-weight: bold;
-  color: white;
-}
-
 /* 区块 */
 .section {
   background-color: white;
   margin: 15px;
   padding: 20px;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 .section-title {
@@ -285,27 +344,6 @@ const saveUserInfo = () => {
   border-bottom: 1px solid #f0f0f0;
 }
 
-/* 头像设置 */
-.avatar-setting {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20px 0;
-}
-
-.avatar-img {
-  width: 80%;
-  max-height: 300px;
-  border-radius: 10px;
-  border: 3px solid #f0f0f0;
-  /* margin-bottom: 10px; */
-}
-
-.avatar-tip {
-  font-size: 14px;
-  color: #1890ff;
-}
-
 /* 表单列表 */
 .form-list {
   margin-bottom: 20px;
@@ -313,7 +351,7 @@ const saveUserInfo = () => {
 
 .form-item {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   padding: 15px 0;
   border-bottom: 1px solid #f5f5f5;
 }
@@ -323,10 +361,16 @@ const saveUserInfo = () => {
 }
 
 .form-label {
-  width: 80px;
+  width: 90px;
   font-size: 15px;
   color: #666;
   flex-shrink: 0;
+}
+
+.form-label.required::before {
+  content: "*";
+  color: #ff4d4f;
+  margin-right: 4px;
 }
 
 .form-input {
@@ -335,37 +379,21 @@ const saveUserInfo = () => {
   color: #333;
 }
 
-.eye-icon {
-  font-size: 18px;
-  padding: 5px;
-  margin-left: 10px;
+.form-picker {
+  flex: 1;
 }
 
-/* 性别选项 */
-.gender-options {
-  display: flex;
-  gap: 20px;
+.picker-value {
+  font-size: 15px;
+  color: #333;
 }
 
-.gender-option {
-  padding: 8px 25px;
-  border-radius: 20px;
-  background-color: #f5f5f5;
-  border: 1px solid transparent;
-}
-
-.gender-option.active {
-  background-color: #e6f7ff;
-  border-color: #1890ff;
-}
-
-.gender-text {
-  font-size: 14px;
-  color: #666;
-}
-
-.gender-option.active .gender-text {
-  color: #1890ff;
+.form-textarea {
+  flex: 1;
+  font-size: 15px;
+  color: #333;
+  height: 80px;
+  padding: 8px 0;
 }
 
 /* 保存按钮 */

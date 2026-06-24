@@ -58,19 +58,40 @@
       </view>
     </view>
     <view class="history-section">
-      <text class="history-title">历史评分记录</text>
+      <view class="history-header">
+        <view class="history-title-bar">
+          <view class="title-line"></view>
+          <text class="history-title">历史评分记录</text>
+        </view>
+        <text class="history-count" v-if="historyRecords.length > 0">共 {{ historyRecords.length }} 条</text>
+      </view>
       <view class="history-list">
-        <view class="history-item" v-for="record in historyRecords" :key="record.id"
-          @click="viewRecordDetail(record.id)">
-          <view class="history-info">
-            <text class="history-date">{{ record.createTime }}</text>
-            <text class="history-score">总分：{{ record.totalScore }}分</text>
+        <view class="history-item" v-for="record in historyRecords" :key="record.recordId"
+          @click="viewRecordDetail(record.recordId)">
+          <view class="item-left-bar" :class="getRiskBarClass(record.totalScore)"></view>
+          <view class="history-main">
+            <view class="history-meta">
+              <text class="history-date">{{ record.createTime }}</text>
+              <view class="risk-tag" :class="getRiskTagClass(record.totalScore)">
+                <text class="risk-tag-text">{{ getRiskLabel(record.totalScore) }}</text>
+              </view>
+            </view>
+            <view class="history-score-row">
+              <text class="history-score-label">总评分</text>
+              <text class="history-score-value">{{ record.totalScore || 0 }}</text>
+              <text class="history-score-unit">分</text>
+            </view>
           </view>
-          <uni-icons type="arrowright" size="18" color="#999"></uni-icons>
+          <view class="item-arrow">
+            <view class="arrow-icon"></view>
+          </view>
         </view>
         <view class="empty-state" v-if="historyRecords.length === 0">
-          <uni-icons type="document" size="64" color="#ccc"></uni-icons>
+          <view class="empty-icon-wrap">
+            <uni-icons type="document" size="48" color="#d9d9d9"></uni-icons>
+          </view>
           <text class="empty-text">暂无评分记录</text>
+          <text class="empty-subtext">完成首次评分后将在此展示</text>
         </view>
       </view>
     </view>
@@ -251,8 +272,31 @@ const goToHealth = () => {
   });
 };
 
+// 根据总分获取风险等级样式
+const getRiskBarClass = (score) => {
+  if (score >= 8) return 'bar-high';
+  if (score >= 5) return 'bar-medium-high';
+  if (score >= 2) return 'bar-medium';
+  return 'bar-low';
+};
+
+const getRiskTagClass = (score) => {
+  if (score >= 8) return 'tag-high';
+  if (score >= 5) return 'tag-medium-high';
+  if (score >= 2) return 'tag-medium';
+  return 'tag-low';
+};
+
+const getRiskLabel = (score) => {
+  if (score >= 8) return '很高危';
+  if (score >= 5) return '高危';
+  if (score >= 2) return '中危';
+  return '低危';
+};
+
 // 查看评分详情
 const viewRecordDetail = (recordId) => {
+  console.log(recordId,'recordId1233333=====')
   uni.request({
     url: `https://yiliao.admin.php7788.com/prod-api/system/score/record/${recordId}`,
     method: 'GET',
@@ -452,61 +496,220 @@ const viewRecordDetail = (recordId) => {
 .history-section {
   margin-top: 20px;
   background-color: white;
-  padding: 10px;
-  border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+}
+
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.history-title-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.title-line {
+  width: 4px;
+  height: 18px;
+  background-color: #1E88E5;
+  border-radius: 2px;
 }
 
 .history-title {
-  font-size: 16px;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 15px;
-  display: block;
+  font-size: 17px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.history-count {
+  font-size: 13px;
+  color: #999;
+  background-color: #f5f5f5;
+  padding: 4px 10px;
+  border-radius: 10px;
 }
 
 .history-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
 .history-item {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 12px;
-  background-color: #f5f5f5;
-  border-radius: 8px;
-  cursor: pointer;
+  background-color: #fff;
+  border-radius: 12px;
+  border: 1px solid #f0f0f0;
+  padding: 14px 12px;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
 }
 
-.history-info {
+.history-item:active {
+  background-color: #f8f9fa;
+  transform: scale(0.99);
+}
+
+.item-left-bar {
+  width: 4px;
+  height: 40px;
+  border-radius: 2px;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+.bar-low {
+  background-color: #52c41a;
+}
+
+.bar-medium {
+  background-color: #faad14;
+}
+
+.bar-medium-high {
+  background-color: #fa8c16;
+}
+
+.bar-high {
+  background-color: #f5222d;
+}
+
+.history-main {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.history-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .history-date {
-  font-size: 14px;
-  color: #666;
-  margin-bottom: 5px;
-  display: block;
+  font-size: 13px;
+  color: #999;
 }
 
-.history-score {
-  font-size: 14px;
+.risk-tag {
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+.risk-tag-text {
+  font-size: 11px;
   font-weight: 500;
-  color: #333;
+}
+
+.tag-low {
+  background-color: #f6ffed;
+}
+
+.tag-low .risk-tag-text {
+  color: #52c41a;
+}
+
+.tag-medium {
+  background-color: #fffbe6;
+}
+
+.tag-medium .risk-tag-text {
+  color: #faad14;
+}
+
+.tag-medium-high {
+  background-color: #fff7e6;
+}
+
+.tag-medium-high .risk-tag-text {
+  color: #fa8c16;
+}
+
+.tag-high {
+  background-color: #fff1f0;
+}
+
+.tag-high .risk-tag-text {
+  color: #f5222d;
+}
+
+.history-score-row {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.history-score-label {
+  font-size: 13px;
+  color: #666;
+}
+
+.history-score-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1E88E5;
+  line-height: 1;
+}
+
+.history-score-unit {
+  font-size: 12px;
+  color: #999;
+}
+
+.item-arrow {
+  margin-left: 8px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f5f5f5;
+  border-radius: 50%;
+}
+
+.arrow-icon {
+  width: 8px;
+  height: 8px;
+  border-top: 2px solid #c0c4cc;
+  border-right: 2px solid #c0c4cc;
+  transform: rotate(45deg);
 }
 
 .empty-state {
   text-align: center;
-  padding: 60px 0;
+  padding: 50px 0;
+}
+
+.empty-icon-wrap {
+  width: 80px;
+  height: 80px;
+  background-color: #f5f5f5;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
 }
 
 .empty-text {
-  font-size: 14px;
-  color: #999;
-  margin-top: 15px;
+  font-size: 15px;
+  color: #666;
+  font-weight: 500;
+  display: block;
+}
+
+.empty-subtext {
+  font-size: 13px;
+  color: #bbb;
+  margin-top: 8px;
   display: block;
 }
 </style>

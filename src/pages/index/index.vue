@@ -43,17 +43,14 @@
 
             <!-- 医生信息 -->
             <view class="card-section doctor-section">
-              <view class="section-header">
-                <uni-icons type="person-filled" size="14" color="#667eea"></uni-icons>
-                <text class="section-title">就诊医生</text>
-              </view>
+              
               <view class="doctor-content">
-                <view class="doctor-item">
+                <!-- <view class="doctor-item">
                   <text class="doctor-label">科室</text>
                   <text class="doctor-value">{{ record.department || '未填写' }}</text>
-                </view>
+                </view> -->
                 <view class="doctor-item">
-                  <text class="doctor-label">医生</text>
+                  <text class="doctor-label">就诊医生：</text>
                   <text class="doctor-value">{{ record.doctorName || '未填写' }}</text>
                 </view>
               </view>

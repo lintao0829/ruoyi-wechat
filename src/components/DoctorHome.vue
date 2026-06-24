@@ -109,14 +109,22 @@ const props = defineProps({
 
 // 计算头像URL
 const avatarUrl = computed(() => {
-  if (!props.userInfo.avatar) {
-    return '/static/logo.png';
+  const doctorImg = props.userInfo.doctorImg;
+  if (doctorImg) {
+    if (doctorImg.startsWith('http')) {
+      return doctorImg;
+    }
+    const imgPath = doctorImg.replace(/\/+/g, '/');
+    return 'https://yiliao.admin.php7788.com/prod-api/' + imgPath;
   }
-  if (props.userInfo.avatar.startsWith('http')) {
-    return props.userInfo.avatar;
+  if (props.userInfo.avatar) {
+    if (props.userInfo.avatar.startsWith('http')) {
+      return props.userInfo.avatar;
+    }
+    const avatarPath = props.userInfo.avatar.replace(/\/+/g, '/');
+    return 'https://yiliao.admin.php7788.com/prod-api/' + avatarPath;
   }
-  const avatarPath = props.userInfo.avatar.replace(/\/+/g, '/');
-  return 'https://yiliao.admin.php7788.com/prod-api/' + avatarPath;
+  return '/static/logo.png';
 });
 
 // 今日统计
