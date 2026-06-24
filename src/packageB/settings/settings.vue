@@ -204,9 +204,7 @@ const doctorIndex = computed(() => {
   return idx >= 0 ? idx : 0;
 });
 const doctorText = computed(() => {
-  const doctor = doctorList.value.find(
-    (d) => d.userId === form.value.doctorId,
-  );
+  const doctor = doctorList.value.find((d) => d.userId === form.value.doctorId);
   return doctor?.userName || "请选择主治医师";
 });
 
@@ -236,9 +234,19 @@ const getDoctorList = () => {
 
 const getPatientInfo = () => {
   const userInfo = uni.getStorageSync("userInfo");
-  const userId = userInfo?.userId;
-  if (!userId) return;
-
+  let userId = "";
+  if (userInfo?.userType == 0) {
+    userId = userInfo?.userId;
+    uni.showToast(0)
+  } else if (userInfo?.userType == 1) {
+    userId = userInfo?.patientId;
+    uni.showToast(1)
+  }
+  console.log(userId,userInfo, "userId====查询患者信息");
+  if (!userId) {
+    uni.showToast({ title: "用户ID不能为空", icon: "none" });
+    return;
+  };
   uni.request({
     url: `${baseUrl}/system/patient/list`,
     method: "GET",
@@ -246,7 +254,7 @@ const getPatientInfo = () => {
     header: { Authorization: uni.getStorageSync("token") || "" },
     success: (res) => {
       if (res.data && res.data.code === 200) {
-        console.log(res,'ressss====查询患者信息');
+        console.log(res, "ressss====查询患者信息");
         const rows = res.data.rows || [];
         if (rows.length > 0) {
           const data = rows[0];
@@ -284,7 +292,7 @@ const saveForm = () => {
 
   const payload = {
     ...form.value,
-    userId:form.value.doctorId,
+    userId: form.value.doctorId,
     // userId: form.value.doctorId,
   };
 
@@ -314,9 +322,9 @@ const saveForm = () => {
   });
 };
 
-onShow(() => {
-  getDoctorList();
-  getPatientInfo();
+onShow(async () => {
+  await getDoctorList();
+  await getPatientInfo();
 });
 </script>
 
