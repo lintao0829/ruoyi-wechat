@@ -62,7 +62,7 @@
             class="form-input"
           />
         </view>
-        <view class="form-item">
+        <view v-if="form.userType !== 0" class="form-item">
           <text class="form-label">就诊时间</text>
           <picker
             class="form-picker"
@@ -246,6 +246,7 @@ const getPatientInfo = () => {
     header: { Authorization: uni.getStorageSync("token") || "" },
     success: (res) => {
       if (res.data && res.data.code === 200) {
+        console.log(res,'ressss====查询患者信息');
         const rows = res.data.rows || [];
         if (rows.length > 0) {
           const data = rows[0];
@@ -283,6 +284,7 @@ const saveForm = () => {
 
   const payload = {
     ...form.value,
+    userId:form.value.doctorId,
     // userId: form.value.doctorId,
   };
 

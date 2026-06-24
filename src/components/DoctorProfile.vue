@@ -8,10 +8,17 @@
     <!-- 医生信息卡片 -->
     <view class="doctor-card">
       <view class="doctor-info">
-        <image :src="avatarUrl" class="avatar" mode="aspectFill" @click="chooseAvatar"></image>
+        <image
+          :src="avatarUrl"
+          class="avatar"
+          mode="aspectFill"
+          @click="chooseAvatar"
+        ></image>
         <view class="doctor-text">
-          <text class="doctor-name">{{ userInfo.nickName || '医生' }}</text>
-          <text class="doctor-title">{{ userInfo.dept?.deptName || '暂无科室' }}</text>
+          <text class="doctor-name">{{ userInfo.nickName || "医生" }}</text>
+          <text class="doctor-title">{{
+            userInfo.dept?.deptName || "暂无科室"
+          }}</text>
         </view>
       </view>
       <view class="edit-btn" @click="goToEdit">
@@ -40,7 +47,7 @@
         <text class="menu-text">设置中心</text>
         <uni-icons type="right" size="18" color="#999"></uni-icons>
       </view>
-      
+
       <view class="menu-item" @click="goToChangePassword">
         <!-- <view class="menu-icon purple">
           <uni-icons type="locked" size="24" color="#fff"></uni-icons>
@@ -58,8 +65,8 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
-import { onShow } from '@dcloudio/uni-app';
+import { ref, computed, onMounted } from "vue";
+import { onShow } from "@dcloudio/uni-app";
 
 // 用户信息
 const userInfo = ref({});
@@ -68,19 +75,19 @@ const userInfo = ref({});
 const stats = ref({
   patients: 0,
   scans: 0,
-  visits: 0
+  visits: 0,
 });
 
 // 计算头像URL
 const avatarUrl = computed(() => {
   if (!userInfo.value.avatar) {
-    return '/static/logo.png';
+    return "/static/logo.png";
   }
-  if (userInfo.value.avatar.startsWith('http')) {
+  if (userInfo.value.avatar.startsWith("http")) {
     return userInfo.value.avatar;
   }
-  const avatarPath = userInfo.value.avatar.replace(/\/+/g, '/');
-  return 'https://yiliao.admin.php7788.com/prod-api/' + avatarPath;
+  const avatarPath = userInfo.value.avatar.replace(/\/+/g, "/");
+  return "https://yiliao.admin.php7788.com/prod-api/" + avatarPath;
 });
 
 // 页面加载
@@ -99,10 +106,10 @@ onShow(() => {
 
 // 检查登录状态
 const checkLogin = () => {
-  const token = uni.getStorageSync('token');
+  const token = uni.getStorageSync("token");
   if (!token) {
     uni.reLaunch({
-      url: '/packageA/login/login'
+      url: "/packageA/login/login",
     });
   }
 };
@@ -110,25 +117,25 @@ const checkLogin = () => {
 // 获取用户信息
 const getUserInfo = () => {
   uni.request({
-    url: 'https://yiliao.admin.php7788.com/prod-api/system/user/profile',
-    method: 'GET',
+    url: "https://yiliao.admin.php7788.com/prod-api/system/user/profile",
+    method: "GET",
     timeout: 10000,
     header: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + uni.getStorageSync('token')
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + uni.getStorageSync("token"),
     },
     success: (res) => {
       if (res.statusCode === 200) {
         const data = res.data;
         if (data.code === 200 || data.code === 0) {
           userInfo.value = data.data;
-          uni.setStorageSync('userInfo', data.data);
+          uni.setStorageSync("userInfo", data.data);
         }
       }
     },
     fail: (err) => {
-      console.error('获取用户信息失败:', err);
-    }
+      console.error("获取用户信息失败:", err);
+    },
   });
 };
 
@@ -138,7 +145,7 @@ const getStats = () => {
   stats.value = {
     patients: 156,
     scans: 452,
-    visits: 890
+    visits: 890,
   };
 };
 
@@ -146,122 +153,126 @@ const getStats = () => {
 const chooseAvatar = () => {
   uni.chooseImage({
     count: 1,
-    sizeType: ['compressed'],
-    sourceType: ['album', 'camera'],
+    sizeType: ["compressed"],
+    sourceType: ["album", "camera"],
     success: (res) => {
       const tempFilePath = res.tempFilePaths[0];
       uploadAvatar(tempFilePath);
-    }
+    },
   });
 };
 
 // 上传头像
 const uploadAvatar = (filePath) => {
-  uni.showLoading({ title: '上传中...', mask: true });
-  
+  uni.showLoading({ title: "上传中...", mask: true });
+
   uni.uploadFile({
-    url: 'https://yiliao.admin.php7788.com/prod-api/system/user/profile/avatar',
+    url: "https://yiliao.admin.php7788.com/prod-api/system/user/profile/avatar",
     filePath: filePath,
-    name: 'avatarfile',
+    name: "avatarfile",
     header: {
-      'Authorization': 'Bearer ' + uni.getStorageSync('token')
+      Authorization: "Bearer " + uni.getStorageSync("token"),
     },
     success: (res) => {
       uni.hideLoading();
       if (res.statusCode === 200) {
         const data = JSON.parse(res.data);
         if (data.code === 200 || data.code === 0) {
-          uni.showToast({ title: '头像上传成功', icon: 'success' });
+          uni.showToast({ title: "头像上传成功", icon: "success" });
           userInfo.value.avatar = data.imgUrl;
-          uni.setStorageSync('userInfo', userInfo.value);
+          uni.setStorageSync("userInfo", userInfo.value);
         } else {
-          uni.showToast({ title: data.msg || '上传失败', icon: 'none' });
+          uni.showToast({ title: data.msg || "上传失败", icon: "none" });
         }
       }
     },
     fail: (err) => {
       uni.hideLoading();
-      uni.showToast({ title: '上传失败', icon: 'none' });
-      console.error('上传头像失败:', err);
-    }
+      uni.showToast({ title: "上传失败", icon: "none" });
+      console.error("上传头像失败:", err);
+    },
   });
 };
 
 // 跳转到编辑页面
 const goToEdit = () => {
   uni.navigateTo({
-    url: '/pages/doctor-profile-edit/doctor-profile-edit'
+    url: "/pages/doctor-profile-edit/doctor-profile-edit",
   });
 };
 
 // 跳转到患者列表
 const goToPatientList = () => {
   uni.navigateTo({
-    url: '/packageB/patient-list/patient-list'
+    url: "/packageB/patient-list/patient-list",
   });
 };
 
 // 跳转到扫码
 const goToScan = () => {
   uni.navigateTo({
-    url: '/packageB/doctor-scan/doctor-scan'
+    url: "/packageB/doctor-scan/doctor-scan",
   });
 };
 
 // 跳转到设置
 const goToSettings = () => {
-  uni.navigateTo({
-    url: '/packageB/settings/settings'
-  });
+  const userType = uni.getStorageSync("userInfo").userType;
+  if (userType === 0) {
+    uni.showToast({
+      title: "医生请去pc端设置个人信息",
+      icon: "none",
+    });
+  }
 };
 
 // 跳转到修改密码
 const goToChangePassword = () => {
   uni.navigateTo({
-    url: '/packageA/change-password/change-password'
+    url: "/packageA/change-password/change-password",
   });
 };
 
 // 退出登录
 const logout = () => {
   uni.showModal({
-    title: '提示',
-    content: '确定要退出登录吗？',
+    title: "提示",
+    content: "确定要退出登录吗？",
     success: (res) => {
       if (res.confirm) {
         // 调用后端退出登录接口
         uni.request({
-          url: 'https://yiliao.admin.php7788.com/prod-api/logout',
-          method: 'POST',
+          url: "https://yiliao.admin.php7788.com/prod-api/logout",
+          method: "POST",
           timeout: 10000,
           header: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + uni.getStorageSync('token')
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + uni.getStorageSync("token"),
           },
           success: () => {
             clearLoginState();
           },
           fail: () => {
             clearLoginState();
-          }
+          },
         });
       }
-    }
+    },
   });
 };
 
 // 清空登录状态
 const clearLoginState = () => {
-  uni.removeStorageSync('token');
-  uni.removeStorageSync('userType');
-  uni.removeStorageSync('userInfo');
+  uni.removeStorageSync("token");
+  uni.removeStorageSync("userType");
+  uni.removeStorageSync("userInfo");
   uni.showToast({
-    title: '已退出登录',
-    icon: 'success'
+    title: "已退出登录",
+    icon: "success",
   });
   setTimeout(() => {
     uni.reLaunch({
-      url: '/pages/index/index'
+      url: "/pages/index/index",
     });
   }, 1000);
 };
@@ -293,7 +304,7 @@ const clearLoginState = () => {
   margin: -40px 15px 15px;
   padding: 20px;
   border-radius: 12px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -349,7 +360,7 @@ const clearLoginState = () => {
   margin: 0 15px 15px;
   padding: 20px;
   border-radius: 12px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
 }
 
 .section-title {
@@ -389,7 +400,7 @@ const clearLoginState = () => {
   margin: 0 15px 15px;
   padding: 0;
   border-radius: 12px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
 }
 
 .menu-item {
@@ -450,6 +461,6 @@ const clearLoginState = () => {
   padding: 15px;
   background-color: white;
   border-radius: 25px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
 }
 </style>
