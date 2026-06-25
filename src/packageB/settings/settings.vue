@@ -89,7 +89,7 @@
           >
             <view class="picker-value">{{ doctorText }}</view>
           </picker>
-          <view v-else class="picker-value disabled">{{ doctorText}}</view>
+          <view v-else class="picker-value disabled">{{ doctorText }}</view>
         </view>
         <view class="form-item">
           <text class="form-label">地址</text>
@@ -199,7 +199,7 @@ const onDateChange = (e) => {
   form.value.visitTime = `${y}-${m}-${d} ${h}:${mi}:${s}`;
 };
 
-const doctorNames = computed(() => doctorList.value.map((d) => d.userName));
+const doctorNames = computed(() => (doctorList.value || []).map((d) => d.userName));
 const doctorDisabled = ref(false);
 const doctorIndex = computed(() => {
   const idx = doctorList.value.findIndex(
