@@ -25,17 +25,17 @@
       <view class="service-section">
         <text class="section-title">健康服务</text>
         <view class="service-grid two-col">
-          <view class="service-item" @click="goToRecord">
+          <!-- <view class="service-item" @click="goToRecord">
             <view class="icon-box blue">
               <image src="/static/icon/dangan.png" class="service-icon" mode="aspectFit"></image>
             </view>
             <text class="service-label">评分档案</text>
-          </view>
-          <view class="service-item" @click="goToDoctor">
+          </view> -->
+          <view class="service-item" @click="goToSettings">
             <view class="icon-box green">
               <image src="/static/icon/yisheng.png" class="service-icon" mode="aspectFit"></image>
             </view>
-            <text class="service-label">我的医生</text>
+            <text class="service-label">个人中心</text>
           </view>
         </view>
       </view>
@@ -62,12 +62,12 @@
             </view>
             <text class="service-label">修改密码</text>
           </view>
-          <view class="service-item" @click="goToSettings">
+          <!-- <view class="service-item" @click="goToSettings">
             <view class="icon-box blue-light">
               <image src="/static/icon/a-shezhi.png" class="service-icon" mode="aspectFit"></image>
             </view>
-            <text class="service-label">设置中心</text>
-          </view>
+            <text class="service-label">个人中心</text>
+          </view> -->
         </view>
       </view>
 
@@ -390,11 +390,11 @@ const clearLoginState = () => {
 }
 
 .service-grid.two-col .service-item {
-  width: 50%;
+  width: 30%;
 }
 
 .service-grid.four-col .service-item {
-  width: 25%;
+  width: 33%;
 }
 
 .service-item {

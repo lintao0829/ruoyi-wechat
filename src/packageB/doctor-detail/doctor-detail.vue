@@ -6,104 +6,11 @@
       <text class="page-subtitle">您的专属健康管理顾问</text>
     </view>
 
-    <!-- 医生列表 -->
-    <view class="doctor-list">
-      <view class="doctor-card" v-for="(doctor, index) in doctorList" :key="index">
-        <!-- 头部信息 -->
-        <view class="card-header">
-          <view class="avatar-section">
-            <image :src="'https://yiliao.admin.php7788.com/prod-api/' + doctor.doctorImg" class="doctor-avatar" mode="aspectFill"></image>
-            <view class="avatar-decoration"></view>
-          </view>
-          <view class="doctor-info">
-            <text class="doctor-name">{{ doctor.userName || '医生' }}</text>
-            <view class="doctor-title-row">
-              <text class="doctor-title">{{ doctor.nickName || '医生' }}</text>
-              <text class="separator">|</text>
-              <text class="doctor-dept">{{ doctor.department || '内科' }}</text>
-            </view>
-            <text class="doctor-hospital">
-              <uni-icons type="location" size="12" color="#666"></uni-icons>
-              {{ doctor.hospital || '医生名片' }}
-            </text>
-          </view>
-        </view>
-
-        <!-- 医生标签 -->
-        <view class="tags-section" v-if="doctor.skills && doctor.skills.length > 0">
-          <view class="tag" v-for="(skill, sIndex) in doctor.skills" :key="sIndex">
-            <uni-icons type="star" size="10" color="#fff"></uni-icons>
-            <text class="tag-text">{{ skill }}</text>
-          </view>
-        </view>
-
-        <!-- 医生简介 -->
-        <view class="intro-section" v-if="doctor.introduction">
-          <view class="section-header">
-            <uni-icons type="file" size="16" color="#1890ff"></uni-icons>
-            <text class="section-title">医生简介</text>
-          </view>
-          <text class="intro-content">{{ doctor.introduction }}</text>
-        </view>
-
-        <!-- 擅长领域 -->
-        <view class="skill-section" v-if="doctor.expertIn && doctor.expertIn.length > 0">
-          <view class="section-header">
-            <uni-icons type="star" size="16" color="#fa8c16"></uni-icons>
-            <text class="section-title">擅长领域</text>
-          </view>
-          <view class="skill-grid">
-            <view class="skill-item" v-for="(skill, sIndex) in doctor.expertIn" :key="sIndex">
-              <view class="skill-dot"></view>
-              <text class="skill-text">{{ skill }}</text>
-            </view>
-          </view>
-        </view>
-
-        <!-- 联系方式 -->
-        <view class="contact-section">
-          <!-- <view class="section-header">
-            <uni-icons type="phone" size="16" color="#52c41a"></uni-icons>
-            <text class="section-title">联系方式</text>
-          </view> -->
-          <!-- <view class="contact-grid"> -->
-            <!-- <view class="contact-item" v-if="doctor.phonenumber">
-              <image src="/static/icon/lianxidianhua.png" class="contact-icon-img"></image>
-              <view class="contact-info">
-                <text class="contact-label">联系电话</text>
-                <text class="contact-value">{{ doctor.phonenumber }}</text>
-              </view>
-              <uni-icons type="right" size="14" color="#ccc"></uni-icons>
-            </view> -->
-            <!-- <view class="contact-item" v-if="doctor.email">
-              <image src="/static/icon/youxiang.png" class="contact-icon-img"></image>
-              <view class="contact-info">
-                <text class="contact-label">邮箱</text>
-                <text class="contact-value">{{ doctor.email }}</text>
-              </view>
-            </view> -->
-          <!-- </view> -->
-        </view>
-
-        <!-- 操作按钮 -->
-        <!-- <view class="action-buttons">
-          <view class="action-btn primary" @click="makeAppointment(doctor)">
-            <uni-icons type="calendar" size="16" color="#fff"></uni-icons>
-            <text>预约挂号</text>
-          </view>
-          <view class="action-btn secondary" @click="onlineConsult(doctor)">
-            <uni-icons type="chat" size="16" color="#1890ff"></uni-icons>
-            <text>在线咨询</text>
-          </view>
-        </view> -->
-      </view>
-    </view>
-
     <!-- 无医生提示 -->
     <view class="empty-section" v-if="doctorList.length === 0 && !loading">
       <image src="/static/icon/no-data.png" class="empty-icon" mode="aspectFit"></image>
       <text class="empty-title">暂无绑定医生</text>
-      <text class="empty-desc">绑定医生后即可查看医生信息</text>
+      <text class="empty-desc">绑定医生后即可查看信息</text>
     </view>
 
     <!-- 加载中 -->

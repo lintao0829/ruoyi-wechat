@@ -37,6 +37,7 @@
         <view class="form-item">
           <text class="form-label required">联系电话</text>
           <input
+            disabled
             type="number"
             v-model="form.phone"
             placeholder="请输入联系电话"
@@ -84,11 +85,11 @@
             :range="doctorNames"
             :value="doctorIndex"
             @change="onDoctorChange"
-            v-if="doctorDisabled"
+            v-if="!doctorDisabled"
           >
             <view class="picker-value">{{ doctorText }}</view>
           </picker>
-          <view v-else>{{ doctorText }}</view>
+          <view v-else class="picker-value disabled">{{ doctorText}}</view>
         </view>
         <view class="form-item">
           <text class="form-label">地址</text>
@@ -212,7 +213,8 @@ const doctorText = computed(() => {
 });
 
 const onDoctorChange = (e) => {
-  if (doctorDisabled.value) return;
+  console.log(doctorDisabled.value,'doctorDisabled.value====')
+  if (!doctorDisabled.value) return;
   const doctor = doctorList.value[e.detail.value];
   if (doctor) {
     form.value.doctorId = doctor.userId;
@@ -274,9 +276,8 @@ const getPatientInfo = () => {
             address: data.address || "",
           };
           initDateIndex(form.value.visitTime);
-          // 只有超级管理员允许修改主治医师
-          const nickName = userInfo?.nickName || '';
-          doctorDisabled.value = nickName !== '超级管理员';
+          // 接口返回有 userId 则不允许编辑主治医师
+          doctorDisabled.value = !!data.userId;
 
         }
       }
@@ -405,7 +406,7 @@ onShow(async () => {
 }
 
 .picker-value.disabled {
-  color: #999;
+  color: #333;
 }
 
 .form-textarea {

@@ -178,7 +178,7 @@ const getRecentPatients = () => {
     },
     data: {
       pageNum: 1,
-      pageSize: 5, // 只获取最近5个患者
+      pageSize: 10000, // 只获取最近5个患者
       // doctorId: doctorId,
       userId: doctorId
     },
