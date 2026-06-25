@@ -213,8 +213,7 @@ const doctorText = computed(() => {
 });
 
 const onDoctorChange = (e) => {
-  console.log(doctorDisabled.value,'doctorDisabled.value====')
-  if (!doctorDisabled.value) return;
+  if (doctorDisabled.value) return;
   const doctor = doctorList.value[e.detail.value];
   if (doctor) {
     form.value.doctorId = doctor.userId;
