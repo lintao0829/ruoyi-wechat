@@ -77,6 +77,33 @@
         <text class="section-title2" @click="goToAddPatient">添加患者</text>
         <!-- <text class="more-link" @click="goToPatientList">查看更多 →</text> -->
       </view>
+      <!-- 搜索条件 -->
+      <view class="search-bar">
+        <view class="search-item">
+          <text class="search-label">姓名</text>
+          <input
+            class="search-input"
+            v-model="searchForm.name"
+            placeholder="请输入姓名"
+            type="text"
+          />
+        </view>
+        <view class="search-item">
+          <text class="search-label">手机号</text>
+          <input
+            class="search-input"
+            v-model="searchForm.phone"
+            placeholder="请输入手机号"
+            type="number"
+            maxlength="11"
+          />
+        </view>
+        <view class="search-btns">
+          <button class="search-btn primary" @click="onSearch">查询</button>
+          <button class="search-btn default" @click="onReset">重置</button>
+        </view>
+      </view>
+
       <view class="patient-list">
         <view
           class="patient-item"
@@ -136,6 +163,32 @@ const todayStats = ref({
 
 // 最近患者
 const recentPatients = ref([]);
+const recentPatientsAll = ref([]);
+
+// 搜索条件
+const searchForm = ref({
+  name: '',
+  phone: '',
+  genderIndex: 0
+});
+const onSearch = () => {
+  const name = searchForm.value.name.trim();
+  const phone = searchForm.value.phone.trim();
+  recentPatients.value = recentPatientsAll.value.filter(p => {
+    const matchName = !name || (p.name && p.name.includes(name));
+    const matchPhone = !phone || (p.phone && p.phone.includes(phone));
+    return matchName && matchPhone;
+  });
+};
+
+const onReset = () => {
+  searchForm.value = {
+    name: '',
+    phone: '',
+    genderIndex: 0
+  };
+  recentPatients.value = recentPatientsAll.value.slice();
+};
 
 // 组件挂载时获取数据
 onMounted(() => {
@@ -187,12 +240,14 @@ const getRecentPatients = () => {
         const data = res.data;
         if (data.code === 200 || data.code === 0) {
           // 格式化患者数据
-          recentPatients.value = (data.rows || []).map(patient => ({
+          recentPatientsAll.value = (data.rows || []).map(patient => ({
             id: patient.patientId,
             name: patient.patientName,
             phone: patient.phone,
+            gender: patient.gender,
             createTime: formatTime(patient.createTime)
           }));
+          recentPatients.value = recentPatientsAll.value.slice();
         } else {
           console.error('获取患者数据失败:', data.msg);
         }
@@ -446,11 +501,90 @@ defineExpose({
   display: block;
 }
 .section-title2 {
-   font-size: 14px;
+  font-size: 14px;
   font-weight: 400;
   color: #667eea;
   margin-bottom: 20px;
   display: block;
+}
+
+.search-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 14px;
+  background: #f8f9fa;
+  border-radius: 12px;
+}
+
+.search-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 200px;
+}
+
+.search-label {
+  font-size: 13px;
+  color: #666;
+  white-space: nowrap;
+}
+
+.search-input {
+  flex: 1;
+  height: 34px;
+  padding: 0 10px;
+  background: #fff;
+  border: 1px solid #e8e8e8;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #333;
+}
+
+.search-picker {
+  flex: 1;
+  height: 34px;
+  padding: 0 10px;
+  background: #fff;
+  border: 1px solid #e8e8e8;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+}
+
+.picker-text {
+  font-size: 13px;
+  color: #333;
+}
+
+.search-btns {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  justify-content: flex-end;
+}
+
+.search-btn {
+  margin: 0;
+  padding: 0 18px;
+  height: 34px;
+  line-height: 34px;
+  font-size: 13px;
+  border-radius: 8px;
+  border: none;
+}
+
+.search-btn.primary {
+  background: #667eea;
+  color: #fff;
+}
+
+.search-btn.default {
+  background: #fff;
+  color: #666;
+  border: 1px solid #e8e8e8;
 }
 
 .stats-grid {
