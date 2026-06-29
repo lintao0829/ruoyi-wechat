@@ -42,19 +42,19 @@
             </view>
 
             <!-- 医生信息 -->
-            <view class="card-section doctor-section">
+            <!-- <view class="card-section doctor-section"> -->
               
-              <view class="doctor-content">
+              <!-- <view class="doctor-content"> -->
                 <!-- <view class="doctor-item">
                   <text class="doctor-label">科室</text>
                   <text class="doctor-value">{{ record.department || '未填写' }}</text>
                 </view> -->
-                <view class="doctor-item">
+                <!-- <view class="doctor-item">
                   <text class="doctor-label">就诊医生：</text>
                   <text class="doctor-value">{{ record.doctorName || '未填写' }}</text>
-                </view>
-              </view>
-            </view>
+                </view> -->
+              <!-- </view> -->
+            <!-- </view> -->
 
             <!-- 评分结果 -->
             <view class="card-section score-section">
