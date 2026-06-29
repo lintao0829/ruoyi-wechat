@@ -30,8 +30,8 @@
         </view>
 
         <!-- 就诊记录卡片列表 -->
-        <view class="record-cards" v-if="medicalRecords.length > 0 && isLogin">
-          <view class="record-card" v-for="(record, index) in medicalRecords.slice(0, 5)" :key="record.recordId">
+        <view class="record-cards" v-if="(medicalRecords || []).length > 0 && isLogin">
+          <view class="record-card" v-for="(record, index) in (medicalRecords || []).slice(0, 5)" :key="record.recordId">
             <!-- 卡片头部 -->
             <view class="card-header">
               <view class="card-info">
