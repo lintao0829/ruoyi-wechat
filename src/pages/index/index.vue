@@ -71,7 +71,7 @@
                   <text class="detail-item">血糖: {{ record.sugarScore }}分</text>
                   <text class="detail-item">血压: {{ record.pressureScore }}分</text>
                   <text class="detail-item">血脂: {{ record.ldlScore }}分</text>
-                  <text class="detail-item">BMI: {{ record.bmiScore }}分</text>
+                  <text class="detail-item">体重: {{ record.bmiScore }}分</text>
                   <text class="detail-item">吸烟: {{ record.smokingScore }}分</text>
                 </view>
               </view>

@@ -3,7 +3,7 @@
     <!-- 指标说明表 -->
     <view class="indicator-table">
       <view class="table-header">
-        <text class="table-title">项目得分</text>
+        <text class="table-title">项目得分1</text>
         <text class="score-label">0分</text>
         <text class="score-label">1分</text>
         <text class="score-label">2分</text>
@@ -219,8 +219,11 @@ const onLdlChange = (e) => {
 
 const onBmiChange = (e) => {
   const index = parseInt(e.detail.value);
+  console.log('执行了---')
+
   bmiIndex.value = index;
   const selected = bmiOptions.value[index];
+  console.log(selected, 'selected=====onBmiChange')
   bmiLabel.value = selected.label;
   form.value.height = selected.score;
   form.value.weight = selected.score;

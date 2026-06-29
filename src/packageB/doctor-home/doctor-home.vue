@@ -133,7 +133,7 @@ const recentPatients = ref([]);
 
 // 页面加载
 onMounted(() => {
-  checkLogin();
+  // checkLogin();
   getUserInfo();
   getTodayStats();
   getRecentPatients();
@@ -141,7 +141,7 @@ onMounted(() => {
 
 // 页面显示
 onShow(() => {
-  checkLogin();
+  // checkLogin();
   getUserInfo();
   getTodayStats();
   getRecentPatients();
