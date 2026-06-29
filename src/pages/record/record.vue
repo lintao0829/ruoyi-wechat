@@ -7,7 +7,9 @@
     <view class="health-score-card">
       <view class="health-score-header">
         <text class="score-title">健康评分</text>
-        <u--button type="primary" shape="circle" @click="goToHealth" plain>开始评分</u--button>
+        <u--button type="primary" shape="circle" @click="goToHealth" plain
+          >开始评分</u--button
+        >
       </view>
       <view class="score-cards">
         <view class="score-card">
@@ -22,7 +24,9 @@
             <image src="/static/icon/xieya.png" class="score-icon"></image>
             <text class="score-label">血压</text>
           </view>
-          <text class="score-value">{{ currentRecord.pressureScore || 0 }}分</text>
+          <text class="score-value"
+            >{{ currentRecord.pressureScore || 0 }}分</text
+          >
         </view>
         <view class="score-card">
           <view class="icon-text">
@@ -43,17 +47,25 @@
             <image src="/static/icon/kongyan.png" class="score-icon"></image>
             <text class="score-label">控烟</text>
           </view>
-          <text class="score-value">{{ currentRecord.smokingScore || 0 }}分</text>
+          <text class="score-value"
+            >{{ currentRecord.smokingScore || 0 }}分</text
+          >
         </view>
       </view>
       <view class="total-score">
         <text class="total-label">总评分</text>
         <text class="total-value">{{ currentRecord.totalScore || 0 }}分</text>
-        <text class="risk-level" :class="riskLevelClass">{{ currentRecord.riskLevel || '低风险' }}</text>
+        <text class="risk-level" :class="riskLevelClass">{{
+          currentRecord.riskLevel || "低风险"
+        }}</text>
       </view>
       <!-- 展示评分二维码 -->
       <view class="risk-image-section" v-if="isLogin">
-        <image :src="riskLevelImage" mode="aspectFit" class="risk-level-img"></image>
+        <image
+          :src="riskLevelImage"
+          mode="aspectFit"
+          class="risk-level-img"
+        ></image>
         <text class="risk-image-text">{{ riskLevelText }}</text>
       </view>
     </view>
@@ -63,22 +75,38 @@
           <view class="title-line"></view>
           <text class="history-title">历史评分记录</text>
         </view>
-        <text class="history-count" v-if="historyRecords.length > 0">共 {{ historyRecords.length }} 条</text>
+        <text class="history-count" v-if="historyRecords.length > 0"
+          >共 {{ historyRecords.length }} 条</text
+        >
       </view>
       <view class="history-list">
-        <view class="history-item" v-for="record in historyRecords" :key="record.recordId"
-          @click="viewRecordDetail(record.recordId)">
-          <view class="item-left-bar" :class="getRiskBarClass(record.totalScore)"></view>
+        <view
+          class="history-item"
+          v-for="record in historyRecords"
+          :key="record.recordId"
+          @click="viewRecordDetail(record.recordId)"
+        >
+          <view
+            class="item-left-bar"
+            :class="getRiskBarClass(record.totalScore)"
+          ></view>
           <view class="history-main">
             <view class="history-meta">
               <text class="history-date">{{ record.createTime }}</text>
-              <view class="risk-tag" :class="getRiskTagClass(record.totalScore)">
-                <text class="risk-tag-text">{{ getRiskLabel(record.totalScore) }}</text>
+              <view
+                class="risk-tag"
+                :class="getRiskTagClass(record.totalScore)"
+              >
+                <text class="risk-tag-text">{{
+                  getRiskLabel(record.totalScore)
+                }}</text>
               </view>
             </view>
             <view class="history-score-row">
               <text class="history-score-label">总评分</text>
-              <text class="history-score-value">{{ record.totalScore || 0 }}</text>
+              <text class="history-score-value">{{
+                record.totalScore || 0
+              }}</text>
               <text class="history-score-unit">分</text>
             </view>
           </view>
@@ -99,8 +127,8 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
-import { onShow } from '@dcloudio/uni-app';
+import { ref, computed, onMounted } from "vue";
+import { onShow } from "@dcloudio/uni-app";
 
 const currentRecord = ref({});
 const historyRecords = ref([]);
@@ -109,30 +137,28 @@ const patientId = ref(null);
 const isLogin = ref(false);
 
 onMounted(() => {
-  isLogin.value = uni.getStorageSync('isLogin') || false;
+  isLogin.value = uni.getStorageSync("isLogin") || false;
 });
-
-
 
 // 风险等级样式类
 const riskLevelClass = computed(() => {
-  const level = currentRecord.value.riskLevel || '';
-  if (level.includes('高')) return 'high';
-  if (level.includes('中')) return 'medium';
-  return 'low';
+  const level = currentRecord.value.riskLevel || "";
+  if (level.includes("高")) return "high";
+  if (level.includes("中")) return "medium";
+  return "low";
 });
 
 // 风险等级图片
 const riskLevelImage = computed(() => {
   const totalScore = currentRecord.value.totalScore || 0;
   if (totalScore <= 1) {
-    return '/static/img/11.jpeg'; // 低危：0-1 分
+    return "/static/img/11.jpeg"; // 低危：0-1 分
   } else if (totalScore <= 4) {
-    return '/static/img/22.jpeg'; // 中危：2-4 分
+    return "/static/img/22.jpeg"; // 中危：2-4 分
   } else if (totalScore <= 7) {
-    return '/static/img/33.jpeg'; // 高危：5-7 分
+    return "/static/img/33.jpeg"; // 高危：5-7 分
   } else {
-    return '/static/img/44.jpeg'; // 很高危：8-10 分
+    return "/static/img/44.jpeg"; // 很高危：8-10 分
   }
 });
 
@@ -140,19 +166,19 @@ const riskLevelImage = computed(() => {
 const riskLevelText = computed(() => {
   const totalScore = currentRecord.value.totalScore || 0;
   if (totalScore <= 1) {
-    return '低危：0-1 分';
+    return "低危：0-1 分";
   } else if (totalScore <= 4) {
-    return '中危：2-4 分';
+    return "中危：2-4 分";
   } else if (totalScore <= 7) {
-    return '高危：5-7 分';
+    return "高危：5-7 分";
   } else {
-    return '很高危：8-10 分';
+    return "很高危：8-10 分";
   }
 });
 
 // 获取历史评分记录
 const fetchHistoryRecords = (patientId) => {
-  console.log('patientId===获取评分记录', patientId)
+  console.log("patientId===获取评分记录", patientId);
   if (!patientId) {
     // 没有 patientId，清空历史记录（不显示错误提示，因为在 getPatientId 中已经处理）
     historyRecords.value = [];
@@ -162,12 +188,12 @@ const fetchHistoryRecords = (patientId) => {
 
   uni.request({
     url: `https://yiliao.admin.php7788.com/prod-api/system/score/record/list?patientId=${patientId}`,
-    method: 'GET',
+    method: "GET",
     header: {
-      'Authorization': 'Bearer ' + uni.getStorageSync('token')
+      Authorization: "Bearer " + uni.getStorageSync("token"),
     },
     success: (res) => {
-      console.log(res, 'res=====历史评分记录')
+      console.log(res, "res=====历史评分记录");
       if (res.data.code === 200) {
         const allRecords = res.data.rows || [];
         // 最多展示前 10 条
@@ -177,60 +203,64 @@ const fetchHistoryRecords = (patientId) => {
     },
     fail: () => {
       uni.showToast({
-        title: '获取历史评分记录失败',
-        icon: 'none'
+        title: "获取历史评分记录失败",
+        icon: "none",
       });
-    }
+    },
   });
 };
 
 // 获取患者 ID
 const getPatientId = () => {
-  const token = uni.getStorageSync('token');
-  const userInfo = uni.getStorageSync('userInfo');
-  
-  console.log('userInfo:', userInfo);
-  
+  const token = uni.getStorageSync("token");
+  const userInfo = uni.getStorageSync("userInfo");
+
+  console.log("userInfo:", userInfo);
+
   // 先检查是否登录
   if (!token || !userInfo) {
     // 未登录---清空历史记录
-    historyRecords.value = [{
-      id: 0,
-      totalScore: 0,
-      riskLevel: '',
-      createTime: '',
-      sugarScore: 0,
-      pressureScore: 0,
-      ldlScore: 0,
-      bmiScore: 0,
-      smokingScore: 0,
-    }];
+    historyRecords.value = [
+      {
+        id: 0,
+        totalScore: 0,
+        riskLevel: "",
+        createTime: "",
+        sugarScore: 0,
+        pressureScore: 0,
+        ldlScore: 0,
+        bmiScore: 0,
+        smokingScore: 0,
+      },
+    ];
     currentRecord.value = {};
     return;
   }
-  
+
   // 从 userInfo 中直接获取 patientId（userInfo 本身就是数据对象，不需要访问 .data）
   patientId.value = userInfo?.patientId || null;
-  console.log('patientId:', patientId.value);
-  
+  console.log("patientId:", patientId.value);
+
   // 如果是医生账号（userType === 0），可能没有 patientId
   if (userInfo.userType === 0 && !patientId.value) {
     // 医生账号，暂时显示空记录
-    historyRecords.value = [{
-      id: 0,
-      totalScore: 0,
-      riskLevel: '',
-      createTime: '',
-      sugarScore: 0,
-      pressureScore: 0,
-      ldlScore: 0,
-      bmiScore: 0,
-      smokingScore: 0,
-    }];
+    historyRecords.value = [
+      {
+        id: 0,
+        totalScore: 0,
+        riskLevel: "",
+        createTime: "",
+        sugarScore: 0,
+        pressureScore: 0,
+        ldlScore: 0,
+        bmiScore: 0,
+        smokingScore: 0,
+      },
+    ];
     currentRecord.value = {};
     return;
   }
-  
+
   // 患者账号，获取历史记录
   fetchHistoryRecords(patientId.value);
 };
@@ -238,21 +268,21 @@ const getPatientId = () => {
 onShow(() => {
   // 获取 patientId
   getPatientId();
-})
+});
 
 const goToHealth = () => {
   // 判断是否登录
-  const token = uni.getStorageSync('token');
-  const userInfo = uni.getStorageSync('userInfo');
+  const token = uni.getStorageSync("token");
+  const userInfo = uni.getStorageSync("userInfo");
 
   if (!token || !userInfo) {
     uni.showToast({
-      title: '请先登录',
-      icon: 'none'
+      title: "请先登录",
+      icon: "none",
     });
     setTimeout(() => {
       uni.navigateTo({
-        url: '/packageA/login/login'
+        url: "/packageA/login/login",
       });
     }, 1500);
   }
@@ -261,74 +291,76 @@ const goToHealth = () => {
   const userType = userInfo?.userType ?? userInfo?.data?.userType;
   if (userType === 0) {
     uni.showToast({
-      title: '医生端无法使用此功能',
-      icon: 'none'
+      title: "医生端无法使用此功能",
+      icon: "none",
     });
     return;
   }
 
   uni.navigateTo({
-    url: '/packageA/health/health'
+    url: "/packageA/health/health",
   });
 };
 
 // 根据总分获取风险等级样式
 const getRiskBarClass = (score) => {
-  if (score >= 8) return 'bar-high';
-  if (score >= 5) return 'bar-medium-high';
-  if (score >= 2) return 'bar-medium';
-  return 'bar-low';
+  if (score >= 8) return "bar-high";
+  if (score >= 5) return "bar-medium-high";
+  if (score >= 2) return "bar-medium";
+  return "bar-low";
 };
 
 const getRiskTagClass = (score) => {
-  if (score >= 8) return 'tag-high';
-  if (score >= 5) return 'tag-medium-high';
-  if (score >= 2) return 'tag-medium';
-  return 'tag-low';
+  if (score >= 8) return "tag-high";
+  if (score >= 5) return "tag-medium-high";
+  if (score >= 2) return "tag-medium";
+  return "tag-low";
 };
 
 const getRiskLabel = (score) => {
-  if (score >= 8) return '很高危';
-  if (score >= 5) return '高危';
-  if (score >= 2) return '中危';
-  return '低危';
+  if (score >= 8) return "很高危";
+  if (score >= 5) return "高危";
+  if (score >= 2) return "中危";
+  return "低危";
 };
 
 // 查看评分详情
 const viewRecordDetail = (recordId) => {
-  console.log(recordId,'recordId1233333=====')
+  console.log(recordId, "recordId1233333=====");
   uni.request({
     url: `https://yiliao.admin.php7788.com/prod-api/system/score/record/${recordId}`,
-    method: 'GET',
+    method: "GET",
     header: {
-      'Authorization': 'Bearer ' + uni.getStorageSync('token')
+      Authorization: "Bearer " + uni.getStorageSync("token"),
     },
     success: (res) => {
-      if (res.statusCode === 200 && (res.data.code === 200 || res.data.code === 0)) {
+      if (
+        res.statusCode === 200 &&
+        (res.data.code === 200 || res.data.code === 0)
+      ) {
         const record = res.data.data;
         const content = `
-糖化：${record.sugarValue || 0}% (${record.sugarScore || 0}分)
-血压：${record.systolicPressure || 0}/${record.diastolicPressure || 0}mmHg (${record.pressureScore || 0}分)
-血脂：${record.ldlValue || 0}mmol/L (${record.ldlScore || 0}分)
-体重：${record.height || 0}cm/${record.weight || 0}kg (${record.bmiScore || 0}分)
-吸烟：${record.smokingCount || 0}支 (${record.smokingScore || 0}分)
-总评分：${record.totalScore || 0}分
-风险等级：${record.riskLevel || '-'}
-        `.trim();
-
+            糖化：${record.sugarScore || 0}分
+            血压：${record.pressureScore || 0}分
+            血脂：${record.ldlScore || 0}分
+            体重：${record.bmiScore || 0}分
+            吸烟：${record.smokingScore || 0}分
+            总评分：${record.totalScore || 0}分
+            风险等级：${record.riskLevel || "-"}
+                    `.trim();
         uni.showModal({
-          title: '评分详情',
+          title: "评分详情",
           content: content,
-          showCancel: false
+          showCancel: false,
         });
       }
     },
     fail: () => {
       uni.showToast({
-        title: '获取详情失败',
-        icon: 'none'
+        title: "获取详情失败",
+        icon: "none",
       });
-    }
+    },
   });
 };
 </script>
@@ -341,7 +373,7 @@ const viewRecordDetail = (recordId) => {
 }
 
 .header {
-  background-color: #1E88E5;
+  background-color: #1e88e5;
   padding: 20px;
   text-align: center;
   color: white;
@@ -358,7 +390,7 @@ const viewRecordDetail = (recordId) => {
   font-size: 14px;
   opacity: 0.9;
   display: block;
-  background-color: #2196F3;
+  background-color: #2196f3;
   padding: 5px 15px;
   border-radius: 20px;
   display: inline-block;
@@ -445,7 +477,7 @@ const viewRecordDetail = (recordId) => {
 .total-value {
   font-size: 24px;
   font-weight: bold;
-  color: #1E88E5;
+  color: #1e88e5;
 }
 
 .risk-level {
@@ -517,7 +549,7 @@ const viewRecordDetail = (recordId) => {
 .title-line {
   width: 4px;
   height: 18px;
-  background-color: #1E88E5;
+  background-color: #1e88e5;
   border-radius: 2px;
 }
 
@@ -655,7 +687,7 @@ const viewRecordDetail = (recordId) => {
 .history-score-value {
   font-size: 22px;
   font-weight: 700;
-  color: #1E88E5;
+  color: #1e88e5;
   line-height: 1;
 }
 
